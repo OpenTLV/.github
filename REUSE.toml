@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Marek Cingel
+
+version = 1
+
+[[annotations]]
+path = [
+    "README.md",
+    "CHANGELOG.md",
+    ".gitattributes",
+    ".gitignore",
+    ".markdownlint.json",
+    "requirements-dev.txt",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Marek Cingel"
+SPDX-License-Identifier = "MIT"
