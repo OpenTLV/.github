@@ -6,18 +6,25 @@ GitHub templates. It is included as the `../.github` sibling in the
 
 Changes are recorded in [CHANGELOG.md](CHANGELOG.md).
 
-## Bootstrap scope
+## Shared community defaults
 
-This initial setup provides repository and licensing metadata. Shared contribution
-guidance, Code of Conduct, security policy and templates are tracked separately in
-[Workspace #48](https://github.com/OpenTLV/opentlv-workspace/issues/48), following
-[bootstrap #47](https://github.com/OpenTLV/opentlv-workspace/issues/47).
-No organization-wide policy is established by this README.
+- [Contributing](CONTRIBUTING.md): shared workflow, ownership and attribution.
+- [Code of Conduct](CODE_OF_CONDUCT.md): community standards and private reporting.
+- [Security](SECURITY.md): private vulnerability reports, triage and coordination.
+- [Support](SUPPORT.md): component and documentation owners.
+- [Issue forms](.github/ISSUE_TEMPLATE/) and
+  [pull request template](.github/PULL_REQUEST_TEMPLATE.md): repository-neutral intake.
 
-Repository-local community files take precedence over organization defaults.
+GitHub uses these defaults from the public repository's default branch when a
+repository has no corresponding local file. A local issue-template directory
+containing any file overrides the entire default issue-template set, including
+its configuration. See the [adoption and validation guide](docs/community-defaults.md)
+before removing local policies or templates.
+
 Each repository retains its LICENSE, SPDX/REUSE metadata, package notices,
-build/test instructions, CI and private vulnerability reporting settings.
-This repository does not distribute those settings or run component builds.
+build/test instructions, CI and security settings. Defaults are not copied into
+component clones or packages. Repository-specific normalization is tracked in
+[Core epic #703](https://github.com/OpenTLV/opentlv/issues/703).
 
 ## Licensing
 
@@ -31,6 +38,8 @@ annotates explicit documentation and configuration paths with aggregate metadata
 New source files need their own accurate copyright and SPDX headers. Third-party
 files retain their own notices and license texts. [LICENSES/MIT.txt](LICENSES/MIT.txt)
 provides the referenced license text without replacing the root LICENSE.
+The adapted Code of Conduct retains Contributor Covenant attribution and its
+CC BY 4.0 license, recorded separately in REUSE metadata and `LICENSES/`.
 
 ## Local contributor checks
 
@@ -69,4 +78,4 @@ To run only the license check:
 python -m reuse lint
 ```
 
-No additional CI is needed for this bootstrap.
+These local checks do not require additional GitHub Actions workflows.
