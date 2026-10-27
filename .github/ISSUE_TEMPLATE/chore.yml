@@ -1,0 +1,40 @@
+name: Chore
+description: Propose maintenance, tooling, CI or documentation improvements.
+title: "[Chore]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search this repository's existing issues first and check the [component directory](https://github.com/OpenTLV/.github/blob/main/SUPPORT.md).
+        Use the [private security route](https://github.com/OpenTLV/.github/blob/main/SECURITY.md) for suspected vulnerabilities.
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: What problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: Proposed changes
+      description: Describe the scope, exclusions and affected repositories.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What observable results are needed to consider this complete?
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Describe planned or completed checks and any limitations.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Related issues, alternatives or sanitized logs.
