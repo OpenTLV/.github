@@ -49,6 +49,30 @@ and [issue template guidance](https://docs.github.com/en/communities/using-templ
    unavailable. Document release support locally when releases exist.
 5. Review issue and pull request creation screens and links as described below.
 
+## Dependency security settings
+
+In each repository's **Settings > Advanced Security** page (the navigation may
+also group this under **Security and quality**), enable and verify:
+
+1. **Dependency graph** to inventory supported dependency manifests and lockfiles.
+2. **Dependabot alerts** to report known vulnerabilities in that inventory.
+3. **Dependabot security updates** to propose fixes for vulnerable dependencies.
+
+These are repository settings. They are not enabled by inheriting community
+files or by adding `.github/dependabot.yml`. That file configures scheduled
+version updates; in this repository it schedules monthly GitHub Actions updates.
+Security alerts and security updates require their own settings. See GitHub's
+[repository security quickstart](https://docs.github.com/en/code-security/getting-started/quickstart-for-securing-your-repository)
+and [Dependabot security update setup](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-security-updates).
+
+After enabling the settings, inspect **Insights > Dependency graph** for the
+expected dependencies and its **Dependabot** tab for configured version-update
+jobs. Check **Security and quality > Dependabot alerts** for scan results; an
+empty alert list alone does not prove that scanning is enabled. Record the
+repository, date, enabled settings, and verification evidence below. Review any
+proposed dependency updates against paired pins in requirements-dev.txt and
+.pre-commit-config.yaml before merging them.
+
 ## Deployment acceptance procedure
 
 These are manual checks against GitHub's behavior. Local lint cannot prove
@@ -71,6 +95,7 @@ policies or creating test issues without agreement.
 | Local policy override | Add a local CONTRIBUTING.md with a unique marker | GitHub contribution link resolves to the local policy |
 | PR template | Open a new PR from a nonempty test branch without a local PR template | Shared template populates the description |
 | Security reporting | Inspect Advisories as a non-maintainer after enabling reporting | Report a vulnerability is available |
+| Dependency security | Inspect the repository's Advanced Security settings, dependency graph, and Dependabot pages | Dependency graph, Dependabot alerts, and security updates are enabled; dependency inventory and update jobs are visible |
 
 Record date, repository, default-branch commit, observer, screenshots or URLs,
 and results in the table below. If GitHub caches an old state, retry after it
@@ -98,6 +123,8 @@ release capabilities are asserted by the profile.
 | Inherited support links and PR template | Pending signed-in UI verification |
 | Issue forms, required fields, and local template/config overrides | Pending signed-in UI verification; the consuming repository's issue chooser redirects signed-out requests to login |
 | Private vulnerability reporting setting and non-maintainer visibility | Pending authenticated setup and verification; public advisory pages alone do not establish whether reporting is enabled |
+| Dependency graph | Disabled in the maintainer-provided screenshot on 2026-11-16; enabling and verifying the repository setting remains pending |
+| Dependabot alerts and security updates | Pending authenticated setup and verification; the committed version-update configuration does not establish these settings |
 
 The local verification artifacts are saved under the ignored
 `.cache/deployment-verification/` directory: `profile.png`, public page HTML,

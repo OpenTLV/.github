@@ -7,6 +7,7 @@ Notable changes are recorded here using
 
 ### Added
 
+- Repository setup and verification guidance for dependency graph, Dependabot alerts, and security updates. (#3)
 - Issue and PR label conventions, including `chore` for repository maintenance and tooling. (#3)
 - Monthly Dependabot updates for SHA-pinned workflow actions.
 - SPDX file notice conventions for headers, sidecars, and preserved third-party notices.

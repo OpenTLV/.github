@@ -133,6 +133,10 @@ Dependabot proposes monthly updates for the SHA-pinned workflow actions. Python
 tools, hook revisions, and the Node.js runtime are updated manually so the paired
 pins stay aligned.
 
+Scheduled version updates do not enable the dependency graph, Dependabot alerts,
+or security updates. Maintainers configure these repository settings separately;
+follow the [adoption guide](https://github.com/OpenTLV/.github/blob/main/docs/adoption.md).
+
 Pre-commit installs markdownlint-cli 0.45.0 from its pinned Git commit and an
 isolated Node.js 24.11.1 runtime; a global Node.js installation is not required.
 The first run needs network access to GitHub, PyPI, the npm registry, and the
