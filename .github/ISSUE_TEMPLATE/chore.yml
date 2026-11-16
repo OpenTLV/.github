@@ -1,0 +1,36 @@
+name: Chore
+description: Propose repository maintenance, tooling, or documentation work.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for maintenance work in the repository where you open the issue.
+        Use Bug report for defects and Feature request for new capabilities.
+        For vulnerabilities, follow https://github.com/OpenTLV/.github/blob/main/SECURITY.md.
+        Remove secrets and personal information before submitting.
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: What needs maintenance, and why is the work needed?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and proposed work
+      description: Identify affected components or files and describe the intended changes.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable outcomes and checks that establish completion.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and risks
+      description: Note related issues, cross-repository coordination, or compatibility concerns.

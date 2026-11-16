@@ -17,6 +17,20 @@ impact, reproduction steps, and a minimal sanitized proof of concept. Share
 only the data needed to investigate. Coordinate publication with maintainers
 and avoid testing systems without their owner's authorization.
 
+## Maintainer triage and coordinated disclosure
+
+The affected repository's maintainers own triage and remediation. Keep the
+report and reproduction material in the private reporting channel. Confirm the
+affected revisions and impact, request missing details privately, and assess
+severity and affected components before deciding on a fix.
+
+For cross-repository findings, coordinate privately with the relevant component
+maintainers and share only the information they need. Agree on remediation,
+release coordination, and disclosure timing with the reporter where possible.
+Publish an advisory describing affected versions, available fixes or mitigations,
+and agreed credit when disclosure is appropriate. Never copy a private report
+into a public tracker as part of routine triage.
+
 ## Supported versions and response
 
 Each repository defines supported releases and security updates locally.
