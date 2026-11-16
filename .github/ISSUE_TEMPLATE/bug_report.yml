@@ -1,0 +1,42 @@
+name: Bug report
+description: Report a reproducible problem without sensitive security details.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For vulnerabilities, follow https://github.com/OpenTLV/.github/blob/main/SECURITY.md.
+        Remove secrets and personal information from examples and logs.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Which revision is affected?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system and relevant tool versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include a minimal sanitized example.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include relevant sanitized error output.
+    validations:
+      required: true

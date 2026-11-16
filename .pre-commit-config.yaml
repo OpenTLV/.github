@@ -1,0 +1,17 @@
+repos:
+  - repo: local
+    hooks:
+      - id: community-files
+        name: Check community files
+        entry: python scripts/check_community.py
+        language: python
+        additional_dependencies: [PyYAML==6.0.3]
+        pass_filenames: false
+        always_run: true
+      - id: reuse
+        name: Check REUSE licensing
+        entry: reuse lint
+        language: python
+        additional_dependencies: [reuse==5.1.1]
+        pass_filenames: false
+        always_run: true
