@@ -1,6 +1,7 @@
 """Validate repository text, local Markdown links, and GitHub issue forms."""
 
 from pathlib import Path
+import json
 import re
 import subprocess
 import sys
@@ -10,19 +11,23 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
+MAX_FILE_BYTES = 1024 * 1024
 
 
-def check() -> list[str]:
+def check(root: Path = ROOT) -> list[str]:
     errors = []
     # Include new files so a direct invocation is useful before staging too.
     result = subprocess.run(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
-        cwd=ROOT, check=True, capture_output=True,
+        cwd=root, check=True, capture_output=True,
     )
     paths = sorted(set(result.stdout.decode("utf-8").split("\0")) - {""})
     for name in paths:
-        path = ROOT / name
+        path = root / name
         if not path.is_file():
+            continue
+        if path.stat().st_size > MAX_FILE_BYTES:
+            errors.append(f"{name}: file exceeds the 1 MiB repository limit")
             continue
         try:
             text = path.read_bytes().decode("utf-8")
@@ -44,6 +49,11 @@ def check() -> list[str]:
                     continue
                 if not (path.parent / unquote(link.path)).exists():
                     errors.append(f"{name}: missing local link target {target}")
+        if path.suffix == ".json":
+            try:
+                json.loads(text, parse_constant=reject_json_constant)
+            except ValueError as exc:
+                errors.append(f"{name}: invalid JSON: {exc}")
         if path.suffix in {".yml", ".yaml"}:
             try:
                 data = yaml.safe_load(text)
@@ -53,6 +63,10 @@ def check() -> list[str]:
             if path.parent.name == "ISSUE_TEMPLATE" and path.name != "config.yml":
                 errors.extend(check_form(name, data))
     return errors
+
+
+def reject_json_constant(value: str) -> None:
+    raise ValueError(f"non-standard constant {value}")
 
 
 def check_form(name: str, data: object) -> list[str]:
@@ -95,4 +109,4 @@ if __name__ == "__main__":
     if problems:
         print("\n".join(problems), file=sys.stderr)
         sys.exit(1)
-    print("Community text, local links, YAML, and basic issue form structure passed.")
+    print("File sizes, text, local links, JSON, YAML, and basic issue form structure passed.")

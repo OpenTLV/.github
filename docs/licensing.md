@@ -32,6 +32,8 @@ Development tools are installed separately, not redistributed here:
 | pre-commit | <https://github.com/pre-commit/pre-commit> | MIT |
 | REUSE tool | <https://github.com/fsfe/reuse-tool> | Apache-2.0 AND CC0-1.0 AND CC-BY-SA-4.0 AND GPL-3.0-or-later (distribution metadata) |
 | PyYAML | <https://github.com/yaml/pyyaml> | MIT |
+| markdownlint-cli | <https://github.com/igorshubovych/markdownlint-cli> | MIT |
+| Node.js | <https://github.com/nodejs/node> | MIT with bundled third-party notices |
 
 Tool licenses do not change the license of the material they check. Review
 upstream license and dependency metadata when updating pinned versions.

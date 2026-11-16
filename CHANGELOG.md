@@ -1,9 +1,14 @@
 # Changelog
 
+Notable changes are recorded here using
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
 ## Unreleased
 
 ### Added
 
+- Pinned Markdown linting, JSON syntax and file-size checks, and validation regression tests. (#3)
+- Python 3.10+ setup guidance, minimum-version CI coverage, and workspace tooling boundaries. (#3)
 - Repository-neutral Chore issue form for maintenance, tooling, and documentation work. (#2)
 - Component ownership and support routing guidance and private security triage procedures. (#2)
 - Adoption guidance for the shared form set and verification of valid submissions. (#2)
@@ -15,12 +20,6 @@
 - Repository-local quality checks and REUSE licensing metadata. (#1)
 - Adoption, local override, attribution, and deployment verification guidance. (#1)
 
-### Pending deployment verification
+### Changed
 
-- Inherited support and PR template links, issue forms, and local overrides on GitHub. (#1)
-- Consuming repository override behavior and private vulnerability reporting setup. (#1)
-
-### Verified
-
-- Final merged commit passes pre-commit and REUSE locally and Community quality CI. (#1)
-- Organization profile rendering, public Markdown links, and inherited conduct, contribution, and security policies. (#1)
+- Changelog uses standard change categories; verification evidence and outstanding checks remain in the adoption guide. (#3)

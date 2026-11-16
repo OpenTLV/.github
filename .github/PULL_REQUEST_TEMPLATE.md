@@ -4,9 +4,9 @@
 
 ## Related issues
 
-Closes #<number>
+Closes #
 
-Refs #<number>
+Refs #
 
 <!-- Replace the placeholders with issue numbers. Remove unused lines, or write
 `None` if no issue applies. For issues in another repository, use
