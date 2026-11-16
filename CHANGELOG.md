@@ -7,6 +7,11 @@ Notable changes are recorded here using
 
 ### Added
 
+- Issue and PR label conventions, including `chore` for repository maintenance and tooling. (#3)
+- Monthly Dependabot updates for SHA-pinned workflow actions.
+- SPDX file notice conventions for headers, sidecars, and preserved third-party notices.
+- Optional logs and additional context fields in the Bug report form.
+- PR template prompts for API/ABI, wire format, packaging, and cross-repository impact.
 - Pinned Markdown linting, JSON syntax and file-size checks, and validation regression tests. (#3)
 - Python 3.10+ setup guidance, minimum-version CI coverage, and workspace tooling boundaries. (#3)
 - Repository-neutral Chore issue form for maintenance, tooling, and documentation work. (#2)

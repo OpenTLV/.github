@@ -37,6 +37,17 @@ body:
     id: actual
     attributes:
       label: Actual behavior
-      description: Include relevant sanitized error output.
+      description: Describe what happened instead.
     validations:
       required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste sanitized error output only; omit credentials and unrelated personal information.
+      render: text
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Related issues, affected components, or other details that help reproduce the problem.

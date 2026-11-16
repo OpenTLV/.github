@@ -72,6 +72,27 @@ Replace `<number>` with the actual issue number in the relevant repository.
 These naming and description rules are reviewed by maintainers; the current
 quality workflow does not enforce branch names, PR titles, or issue references.
 
+### Issue and PR labels
+
+Maintainers apply labels that describe the work. Use labels available in the
+destination repository; local label conventions take precedence.
+
+| Label | Purpose |
+| --- | --- |
+| `bug` | Incorrect behavior or a regression |
+| `enhancement` | New features or improvements to project capabilities |
+| `documentation` | Changes to documentation or contributor guidance |
+| `chore` | Repository maintenance, tooling, dependencies, and CI changes |
+
+Labels can be combined when they describe different aspects of a change. For
+example, tooling changes that also update contributor guidance use `chore` and
+`documentation`. Use `chore` for maintenance rather than adding `enhancement`
+solely because a development tool or check is new.
+
+Branch prefixes and labels serve separate purposes: a `chore/` branch does not
+automatically apply a label. Contributors without label permissions can leave
+label selection to maintainers.
+
 ## Working on this community repository
 
 The OpenTLV/.github organization bootstrap uses the branch
@@ -108,6 +129,9 @@ run in this repository's CI. Dependencies are pinned directly; their transitive
 dependencies are resolved by pip and are not a complete lockfile.
 When updating PyYAML or REUSE, keep the versions in requirements-dev.txt and
 .pre-commit-config.yaml aligned. CI runs REUSE through the pre-commit hook.
+Dependabot proposes monthly updates for the SHA-pinned workflow actions. Python
+tools, hook revisions, and the Node.js runtime are updated manually so the paired
+pins stay aligned.
 
 Pre-commit installs markdownlint-cli 0.45.0 from its pinned Git commit and an
 isolated Node.js 24.11.1 runtime; a global Node.js installation is not required.
