@@ -76,10 +76,26 @@ release capabilities are asserted by the profile.
 
 | Evidence | Status |
 | --- | --- |
-| Profile rendering on GitHub | Pending deployment |
-| Inherited policies and PR template in a consuming public repository | Pending deployment |
-| Required fields and local template/config overrides | Pending deployment |
-| Private vulnerability reporting setting and non-maintainer visibility | Pending maintainer setup and verification |
+| Final merged commit `feea457affa5813e13874e2434538c76c3072aa1` | Verified on 2026-11-16: clean local checkout; `pre-commit run --all-files` and standalone `reuse lint` passed; REUSE covered 20/20 files |
+| Community quality CI | [Run 43891801580](https://github.com/OpenTLV/.github/actions/runs/43891801580) passed on the same merged commit; job logs confirm both community-files and reuse hooks passed |
+| Profile rendering on GitHub | Verified on 2026-11-16 in a separate signed-out headless Chrome session: headings, paragraphs, and links display correctly on the [organization overview](https://github.com/OpenTLV) |
+| Public documentation links | All 17 unique HTTPS links in repository Markdown returned HTTP 200 on 2026-11-16; profile claims were checked against the live public repositories |
+| Inherited conduct, contribution, and security policies | Verified on 2026-11-16 in [opentlv Community Standards](https://github.com/OpenTLV/opentlv/community); [security policy](https://github.com/OpenTLV/opentlv/security/policy) displays the shared policy, while the consuming repository's tree contains only LICENSE |
+| Inherited support links and PR template | Pending signed-in UI verification |
+| Issue forms, required fields, and local template/config overrides | Pending signed-in UI verification; the consuming repository's issue chooser redirects signed-out requests to login |
+| Private vulnerability reporting setting and non-maintainer visibility | Pending authenticated setup and verification; public advisory pages alone do not establish whether reporting is enabled |
+
+The local verification artifacts are saved under the ignored
+`.cache/deployment-verification/` directory: `profile.png`, public page HTML,
+`results.json`, and `links.json`. They are local evidence, not published assets.
+The checks above apply to the merged implementation commit, before this
+verification-record update.
+
+Authenticated UI checks could not be completed in this session because both
+available Computer Use entry points reported that the native pipe was
+unavailable. No test issues, test repositories, or override fixtures were
+created, and no reporting settings were changed. Complete the remaining checks
+using the procedure above when authenticated browser access is available.
 
 Do not close the parent issue as complete until these checks have recorded
 evidence and the repository-local quality checks pass.
