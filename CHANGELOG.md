@@ -4,6 +4,10 @@
 
 ### Added
 
+- Repository-neutral Chore issue form for maintenance, tooling, and documentation work. (#2)
+- Component ownership and support routing guidance and private security triage procedures. (#2)
+- Adoption guidance for the shared form set and verification of valid submissions. (#2)
+- Maintainers-only blank issue option; general contributors use the issue forms. (#2)
 - Organization profile with bootstrap status and verified public repository links. (#1)
 - Contribution, conduct, security, and support policies. (#1)
 - Branch naming conventions and PR title, description, and issue reference guidelines. (#1)

@@ -16,6 +16,14 @@ merge individual inherited forms with local forms. Copy every form you want to
 keep when defining local templates. Our forms do not assign labels or people,
 so consuming repositories need no matching labels or accounts.
 
+The shared chooser offers Bug report for reproducible defects, Feature request
+for new capabilities, and Chore for maintenance, tooling, or documentation work.
+Blank issues are disabled for general contributors. GitHub still offers its
+built-in **Blank issue** option, labeled **Maintainers only**, to users with
+Write, Maintain, or Admin access. This setting is not an Admin-only permission
+boundary. Component-specific forms belong in the consuming repository;
+maintainers must include every form they want to retain in that local set.
+
 The organization profile comes from `profile/README.md`. A project's README,
 license, CI workflows, branch protection, permissions, release process, and
 security settings remain local. This repository's pre-commit, REUSE, editor,
@@ -53,9 +61,11 @@ policies or creating test issues without agreement.
 | --- | --- | --- |
 | Profile | Visit the organization overview signed out | Profile displays with working public links and accurate status |
 | Inherited policies | In a public repository with no corresponding local files, inspect Community Standards and contribution/security/support links | Links lead to these defaults |
-| Default forms | Open the consuming repository's new-issue chooser | Bug report, Feature request, and contact links appear |
+| Default forms | Open the consuming repository's new-issue chooser as a general contributor | Bug report, Feature request, Chore, and contact links appear; blank issue is hidden |
+| Maintainer blank issue | Open the same chooser with Write, Maintain, or Admin access | Built-in Blank issue option appears with the Maintainers only label |
 | Form validation | Choose each form and attempt submission without required fields | Required fields prevent submission; no issue needs to be created |
-| Local form override | On the test repository's default branch add a valid local form with a unique name | Only local forms appear; shared bug/feature forms disappear |
+| Valid submissions | In the agreed public test repository, submit one clearly marked test issue per form with all required fields completed | Each issue is created with the supplied fields; record its URL and close it as a test |
+| Local form override | On the test repository's default branch add a valid local form with a unique name | Only local forms appear; shared Bug report, Feature request, and Chore forms disappear |
 | Configuration override | Replace that local form with a local config.yml containing blank_issues_enabled: true | Shared forms remain absent |
 | Restore inheritance | Remove the test repository's local ISSUE_TEMPLATE directory | Shared forms return |
 | Local policy override | Add a local CONTRIBUTING.md with a unique marker | GitHub contribution link resolves to the local policy |
@@ -65,6 +75,10 @@ policies or creating test issues without agreement.
 Record date, repository, default-branch commit, observer, screenshots or URLs,
 and results in the table below. If GitHub caches an old state, retry after it
 refreshes and record the observed behavior. Restore test fixtures afterward.
+
+Adding the Chore form and policy clarifications for issue #2 requires a new
+deployment verification run. The historical results below cover the bootstrap
+commit only; they do not verify the new form's rendering or submission behavior.
 
 ## Verification record
 
