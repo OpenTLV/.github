@@ -13,5 +13,10 @@
 
 ### Pending deployment verification
 
-- Profile rendering, inherited community links, and issue form behavior on GitHub. (#1)
+- Inherited support and PR template links, issue forms, and local overrides on GitHub. (#1)
 - Consuming repository override behavior and private vulnerability reporting setup. (#1)
+
+### Verified
+
+- Final merged commit passes pre-commit and REUSE locally and Community quality CI. (#1)
+- Organization profile rendering, public Markdown links, and inherited conduct, contribution, and security policies. (#1)
