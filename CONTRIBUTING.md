@@ -60,9 +60,10 @@ Complete the checklist accurately and replace or remove template placeholders.
 
 In **Related issues**, put each issue on a separate line:
 
-- Use `Closes #<number>` when the PR fully resolves the issue.
-- Use `Refs #<number>` when the PR relates to an issue but leaves work remaining.
-- For another repository, use `Closes owner/repo#<number>` or
+- For issues in the same repository as the PR, use only `#<number>`:
+  `Closes #<number>` when the PR fully resolves the issue, or `Refs #<number>`
+  when the PR relates to an issue but leaves work remaining.
+- Only for issues in another repository, use `Closes owner/repo#<number>` or
   `Refs owner/repo#<number>`.
 - Write `None` if no issue applies; remove unused lines.
 
@@ -74,9 +75,9 @@ quality workflow does not enforce branch names, PR titles, or issue references.
 ## Working on this community repository
 
 The OpenTLV/.github organization bootstrap uses the branch
-`feat/bootstrap-community-standards`. For that work, use
-`Refs OpenTLV/.github#1` while deployment acceptance checks remain pending;
-use `Closes OpenTLV/.github#1` only when the PR completes all acceptance criteria.
+`feat/bootstrap-community-standards`. In a PR in OpenTLV/.github, use `Refs #1`
+while deployment acceptance checks remain pending; use `Closes #1` only when
+the PR completes all acceptance criteria.
 
 Requirements: Git and Python 3.12 with pip and venv. From a fresh checkout:
 
