@@ -1,9 +1,21 @@
 repos:
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: 192ad822316c3a22fb3d3cc8aa6eafa0b8488360 # v0.45.0
+    hooks:
+      - id: markdownlint
+        language_version: 24.11.1
   - repo: local
     hooks:
       - id: community-files
         name: Check community files
         entry: python scripts/check_community.py
+        language: python
+        additional_dependencies: [PyYAML==6.0.3]
+        pass_filenames: false
+        always_run: true
+      - id: community-check-tests
+        name: Test community validation
+        entry: python -m unittest discover -s tests
         language: python
         additional_dependencies: [PyYAML==6.0.3]
         pass_filenames: false

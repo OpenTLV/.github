@@ -4,9 +4,9 @@
 
 ## Related issues
 
-Closes #<number>
+Closes #
 
-Refs #<number>
+Refs #
 
 <!-- Replace the placeholders with issue numbers. Remove unused lines, or write
 `None` if no issue applies. For issues in another repository, use
@@ -18,7 +18,12 @@ Refs #<number>
 
 ## Risks and compatibility
 
-<!-- Note breaking changes, migration needs, security impact, and limitations. -->
+<!-- Note breaking changes, migration needs, security impact, and limitations.
+State any impact on public API/ABI, wire format or serialization, packaging, or
+dependencies, or write `None`. Link coordinated changes required in other
+repositories. -->
+
+<!-- Do not disclose undisclosed vulnerabilities here; follow the security policy. -->
 
 - [ ] I followed the destination repository's contribution and licensing rules.
 - [ ] I updated relevant documentation and the changelog where applicable.
