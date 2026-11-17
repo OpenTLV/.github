@@ -235,7 +235,11 @@ When updating PyYAML or REUSE, keep the versions in requirements-dev.txt and
 .pre-commit-config.yaml aligned. CI runs REUSE through the pre-commit hook.
 Dependabot proposes monthly updates for the SHA-pinned workflow actions. Python
 tools, hook revisions, and the Node.js runtime are updated manually so the paired
-pins stay aligned.
+pins stay aligned. Workflow analyzer pins and integrity checks are maintained
+manually as described in [GitHub Actions checks](docs/actions-checks.md).
+
+Changes to workflows must also pass actionlint and zizmor. Follow the same
+guide for local commands; these checks run once in the existing quality workflow.
 
 Scheduled version updates do not enable the dependency graph, Dependabot alerts,
 or security updates. Maintainers configure these repository settings separately;

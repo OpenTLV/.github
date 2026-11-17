@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Pinned, integrity-checked actionlint and zizmor checks in community CI, with local reproduction and workflow security guidance. (#12)
 - Organization-wide changelog guidance with newest-first releases and entries within each category. (#17)
 - Private credential-exposure triage and secret-scanning alert resolution guidance. (#13)
 - Native push-protection setup, safe verification, coverage limits, and local detector evaluation. (#13)
