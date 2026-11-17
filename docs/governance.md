@@ -158,5 +158,6 @@ permissions separate from repository and organization defaults.
    unsigned commits without rewriting main. Review the baseline after team,
    workflow, plan, visibility, or status-check changes.
 
-Track settings changes and separately approved enforcement validation in issue
-#10. Do not mark the baseline enforced until the corresponding evidence exists.
+Track settings changes and separately approved enforcement validation in
+[issue #10](https://github.com/OpenTLV/.github/issues/10). Do not mark the baseline
+enforced until the corresponding evidence exists.
