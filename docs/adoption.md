@@ -36,6 +36,10 @@ and [issue template guidance](https://docs.github.com/en/communities/using-templ
 
 ## Maintainer onboarding
 
+Branch protections, merge policy, Actions governance, and their inspection limits
+are documented in the [governance baseline](governance.md). That document is a
+proposal requiring separate approval; community defaults do not enforce it.
+
 1. Review the defaults against the destination project's requirements. Add local
    policies when ownership, support windows, contacts, or contribution steps differ.
 2. Keep the project's own license and notices. Never rely on an inherited license.
