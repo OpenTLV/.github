@@ -80,6 +80,72 @@ repository, date, enabled settings, and verification evidence below. Review any
 proposed dependency updates against paired pins in requirements-dev.txt and
 .pre-commit-config.yaml before merging them.
 
+## Secret scanning and push protection
+
+Secret scanning detects supported credential patterns after exposure; repository
+push protection blocks supported matches before acceptance. Inspect both in
+**Settings > Advanced Security**, under **Secret scanning** or **Secret Protection**
+depending on the interface. Enabled alerts, no open alerts, or personal-account
+push protection do not establish repository-wide push protection.
+
+Prefer native secret-scanning alerts and repository push protection for eligible
+public repositories. Public scanning is free; private/internal organization
+repositories have different product and plan requirements. Verify entitlement
+for additional detection or bypass controls. Do not purchase products or modify
+settings without explicit maintainer approval. Sources:
+[scanning availability](https://docs.github.com/en/code-security/how-tos/secure-your-secrets/detect-secret-leaks/enable-secret-scanning)
+and [push protection behavior](https://docs.github.com/en/code-security/concepts/secret-security/push-protection).
+
+Organization owners can use security configurations for eligible repositories
+and defaults for new repositories. Inspect individual feature values and target
+repositories; assignment alone does not prove enablement. Preserve the agreed
+scope of new public repositories and verify existing repositories separately
+from future defaults. See [security configurations](https://docs.github.com/en/code-security/how-tos/secure-at-scale/configure-organization-security/establish-complete-coverage/create-custom-configuration).
+
+### Safe verification and evidence
+
+Record the repository, effective scanning and push-protection settings,
+organization configuration, and available bypass/alert-dismissal controls in the
+tracking issue. Classify values as confirmed, not confirmed, or unavailable to
+inspect. Keep snapshots outside Git in ignored `.cache/`. Never save raw alert
+payloads, matched strings, or credentials in those snapshots.
+
+After an approved change, refresh settings to verify persistence. Inspect scan
+status privately in **Security and quality > Secret scanning**, recording only
+sanitized status and coverage. Missing API fields do not mean disabled. An empty
+alert list does not prove scanning completed or every possible secret is covered.
+
+Never generate real credentials, publish leaks, bypass protection, or modify
+main for testing. Settings evidence does not prove a blocked-push test. If a
+test is needed, agree on an isolated scope and a provider-documented nonfunctional
+test value first; otherwise record it as unperformed. Genuine historical block
+events can provide sanitized evidence without manufacturing an exposure.
+
+### Coverage limits and additional detectors
+
+Native detection is pattern-dependent. Some token types and large or complex
+pushes fall outside prevention coverage; later alerts are not prevention.
+Review the current [detection limits](https://docs.github.com/en/code-security/reference/secret-security/secret-scanning-scope).
+Record unavailable controls and their actual plan/visibility limitation before
+choosing a mitigation. Do not infer entitlement from a configuration name.
+
+For OpenTLV/.github, defer an additional local/CI detector until a concrete gap
+is demonstrated. Verify native coverage first. Existing whitespace, Markdown,
+YAML/JSON, and REUSE checks are not secret detectors.
+
+A local detector could add pre-commit feedback, offline checking, or project
+patterns. Those benefits must justify another pinned tool, pattern maintenance,
+false positives, and exception review. CI-only detection happens after upload
+and cannot undo a leak. If warranted, review coverage, license, updates,
+sanitized output, and narrowly scoped exceptions before adding a detector.
+Retain native protections and repository-local workflows; no additional
+orchestrator is needed for this evaluation.
+
+Alert handling follows the [security policy](../SECURITY.md#leaked-credentials-and-secret-scanning-alerts).
+Approval boundaries follow the [governance baseline](governance.md). Live settings
+and evidence are tracked in [issue #13](https://github.com/OpenTLV/.github/issues/13),
+coordinated with #10.
+
 ## Deployment acceptance procedure
 
 These are manual checks against GitHub's behavior. Local lint cannot prove

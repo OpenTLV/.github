@@ -94,6 +94,11 @@ reporting must be inspected separately from committed configuration. Their
 enablement and UI acceptance work remain tracked in #1/#2 through the
 [adoption guide](adoption.md); do not create competing completion checklists here.
 
+Inspect secret-scanning and repository push-protection settings individually
+using the [secret protection procedure](adoption.md#secret-scanning-and-push-protection)
+and private alert-handling guidance in SECURITY.md. Issue #13 owns this follow-up;
+documentation and configuration files do not enable these controls themselves.
+
 CodeQL is eligible for public repositories and supports this repository's Python
 helpers and GitHub Actions workflows. It is a reasonable optional addition for
 review, not a reason to add another orchestrator. Check default setup before
