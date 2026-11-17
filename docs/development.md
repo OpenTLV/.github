@@ -24,35 +24,32 @@ Activate with `.venv\Scripts\Activate.ps1` in PowerShell, or
 python -m pip install -r requirements-dev.txt
 pre-commit install
 pre-commit run --all-files
-reuse lint
-python -m unittest discover -s tests
 ```
 
-For newly created files, stage the intended paths with `git add <path>` before
-running `pre-commit run --all-files`: it checks files known to Git. The first run
-may normalize files; review changes and rerun until all checks pass. Pre-commit
-and the workflow analyzers run in this repository's CI. Dependencies are pinned
-directly; their transitive dependencies are resolved by pip and are not a complete
-lockfile.
-When updating PyYAML or REUSE, keep the versions in requirements-dev.txt and
-.pre-commit-config.yaml aligned. CI runs REUSE through the pre-commit hook.
-Dependabot proposes monthly updates for the SHA-pinned workflow actions. Python
-tools, hook revisions, and the Node.js runtime are updated manually so the paired
-pins stay aligned. Workflow analyzer pins and integrity checks are maintained
-manually as described in [GitHub Actions checks](actions-checks.md).
+Pre-commit runs Markdown lint, the community checker, its regression tests, and
+REUSE licensing checks. Separate REUSE and unittest runs are not required for
+normal validation. To isolate a failure, run `pre-commit run reuse --all-files`
+or `pre-commit run community-check-tests --all-files`.
 
-Changes to workflows must also pass actionlint and zizmor. Follow the same
-guide for local commands; these checks run once in the existing quality workflow.
+Stage intended new files with `git add <path>` before the full run so Markdown
+lint includes them. The first run may normalize files; review changes and rerun
+until all checks pass. Coverage differs by hook:
 
-Scheduled version updates do not enable the dependency graph, Dependabot alerts,
-or security updates. Maintainers configure these repository settings separately;
-follow the [adoption guide](adoption.md).
+| Check | File coverage with `pre-commit run --all-files` |
+| --- | --- |
+| Markdown lint | Markdown files selected by pre-commit from Git-tracked paths, including newly staged files; unstaged untracked files are not selected. |
+| Community checker (`scripts/check_community.py`) | Existing tracked files plus non-ignored untracked files, discovered through `git ls-files --cached --others --exclude-standard`; ignores the hook's filename list. |
+| REUSE | Repository files, including non-ignored untracked files, subject to REUSE exclusions such as license texts, metadata sidecars, empty files, and symlinks; ignores the hook's filename list. |
+| Regression tests | Runs the test suite regardless of the selected filenames. |
 
-Pre-commit installs markdownlint-cli 0.45.0 from its pinned Git commit and an
-isolated Node.js 24.11.1 runtime; a global Node.js installation is not required.
-The first run needs network access to GitHub, PyPI, the npm registry, and the
-Node.js download service. Direct Python tool versions and hook/runtime versions
-are pinned; transitive Python and npm packages are not a complete lockfile.
+The three local hooks use `pass_filenames: false` and `always_run: true`.
+Consequently, a pre-commit filename selection does not restrict their scope.
+Untracked files inside ignored directories such as `.cache/` and `.venv/` are
+excluded from repository scans.
+
+Changes to workflows must also pass actionlint and zizmor; see
+[GitHub Actions checks](actions-checks.md) for local commands. CI runs the same
+pre-commit checks and runs the workflow analyzers once on Python 3.12.
 
 The community checker validates UTF-8, LF endings, trailing whitespace, final
 newlines, conflict markers, local Markdown link targets, YAML/JSON syntax, and
@@ -73,9 +70,31 @@ parentheses, for example `(#1)`. Follow the shared
 [changelog rules](../CONTRIBUTING.md#changelogs), including prepending new entries
 within each category.
 Record deployment evidence and pending checks in docs/adoption.md rather than
-adding status sections to the changelog. At release time, move entries under
-the actual version and release date; do not invent releases for policy updates.
+adding status sections to the changelog.
 Follow the [licensing instructions](licensing.md).
+
+## Tooling and updates
+
+Pre-commit installs markdownlint-cli 0.45.0 from its pinned Git commit and an
+isolated Node.js 24.11.1 runtime; a global Node.js installation is not required.
+The first run needs network access to GitHub, PyPI, the npm registry, and the
+Node.js download service.
+
+- Dependabot proposes monthly updates for SHA-pinned workflow actions.
+- Maintain Python tool versions, hook revisions, and the Node.js runtime manually.
+  Keep PyYAML and REUSE versions aligned between `requirements-dev.txt` and
+  `.pre-commit-config.yaml`.
+- Review analyzer releases monthly and when relevant security fixes appear.
+  Follow the [analyzer integrity and update policy](actions-checks.md#suppressions-and-updates)
+  for paired versions, artifact URLs, and hashes.
+
+Direct Python tools and hook/runtime versions are pinned; transitive Python and
+npm dependencies are not a complete lockfile. The analyzer wheel requirements
+are separately pinned and hash-checked. Run the documented checks after updates.
+
+Scheduled updates do not enable the dependency graph, Dependabot alerts, or
+security updates. Maintainers configure these settings separately; follow the
+[adoption guide](adoption.md).
 
 ## Workspace integration
 

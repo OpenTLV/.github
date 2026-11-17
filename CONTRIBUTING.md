@@ -46,8 +46,16 @@ Follow the affected repository's security policy or the shared guidance at
 ## Branch names
 
 Create a branch from the destination repository's current default branch. Use
-`<type>/<short-description>`, with lowercase English words separated by hyphens.
-Use `feat/` consistently rather than `feature/`.
+`<type>/<issue-number>-<short-description>` when the work relates to an issue,
+for example `docs/26-simplify-validation-guidance`. Put the issue number directly
+after the slash, without `#`. If several issues apply, use the primary issue's
+number and list all relevant issues in the PR description. For an issue in
+another repository, include its full `owner/repo#number` reference in the PR
+description so the branch number has context.
+
+For work without an issue, use `<type>/<short-description>`. Write the description
+in lowercase English words separated by hyphens. Use `feat/` consistently rather
+than `feature/`.
 
 | Prefix | Purpose |
 | --- | --- |
@@ -60,7 +68,9 @@ Use `feat/` consistently rather than `feature/`.
 | `chore/` | Other repository maintenance |
 
 Choose the prefix that describes the main purpose of the change, for example
-`fix/broken-contribution-links`.
+`fix/20-broken-contribution-links` for work linked to issue #20, or
+`fix/broken-contribution-links` when no issue applies. Existing branches do not
+need to be renamed; use this convention for new branches.
 
 ## Commit messages
 
@@ -131,8 +141,6 @@ label selection to maintainers.
 For future changelog updates across OpenTLV repositories, use a root
 `CHANGELOG.md` following [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
-Every changelog must begin with the exact standard introduction shown in the
-example below, including both reference links.
 
 - Keep `## [Unreleased]` as the first version section. Add notable changes there
   as work lands, grouped under `Added`, `Changed`, `Deprecated`, `Removed`,
@@ -156,8 +164,8 @@ example below, including both reference links.
   release, update the Unreleased comparison to start at the latest release tag.
 
 Every OpenTLV `CHANGELOG.md` must start with the exact introduction shown below,
-including the Keep a Changelog and Semantic Versioning links. The versions,
-dates, and changes after the introduction are illustrative examples.
+including both reference links. The versions, dates, and changes after the
+introduction are illustrative examples.
 
 ```markdown
 # Changelog

@@ -74,10 +74,10 @@ first. If an exception is necessary, use the narrowest rule and location, record
 the security rationale beside it, and describe the remaining risk in the PR.
 Do not add blanket ignores or disable checks to make CI green.
 
-Dependabot proposes monthly updates to the SHA-pinned workflow actions.
-Maintainers manually review analyzer releases monthly and when relevant security
-fixes appear. Update the actionlint version, archive URL, and hard-coded SHA-256
-in CI together with the Windows commands above. Compare hashes with the
+See [tooling and updates](development.md#tooling-and-updates) for update ownership,
+review cadence, and other tool pins. For actionlint, update the version, archive
+URL, and hard-coded SHA-256 in CI together with the Windows commands above.
+Compare hashes with the
 [upstream actionlint release](https://github.com/rhysd/actionlint/releases);
 verify release attestations when available. Never fetch a mutable installer or
 accept a freshly downloaded checksum as the sole integrity check in CI.

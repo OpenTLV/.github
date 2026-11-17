@@ -37,5 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Include the issue number directly after the type prefix in new branch names for issue-related work. (#26)
+- Simplify contribution and validation guidance, consolidate tooling update rules, and clarify tracked and untracked file coverage. (#26)
 - Separate inherited contribution rules from community-repository development instructions and remove obsolete bootstrap guidance. (#20)
 - Changelog uses standard change categories; verification evidence and outstanding checks remain in the adoption guide. (#3)
