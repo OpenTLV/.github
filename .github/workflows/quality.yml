@@ -9,8 +9,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   quality:
+    name: quality (${{ matrix.python-version }})
     strategy:
       matrix:
         python-version: ['3.10', '3.12']
@@ -25,3 +30,22 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -r requirements-dev.txt
       - run: pre-commit run --all-files
+      # Workflow analysis is independent of Python version; run it once.
+      - name: Check GitHub Actions correctness
+        if: matrix.python-version == '3.12'
+        shell: bash
+        run: |
+          mkdir -p .cache/actionlint
+          curl --fail --silent --show-error --location \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            --output .cache/actionlint/actionlint.tar.gz
+          echo '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  .cache/actionlint/actionlint.tar.gz' | sha256sum --check --strict
+          tar -xzf .cache/actionlint/actionlint.tar.gz -C .cache/actionlint actionlint
+          .cache/actionlint/actionlint -shellcheck= -pyflakes=
+      - name: Install GitHub Actions security analyzer
+        if: matrix.python-version == '3.12'
+        run: |
+          python -m pip install --require-hashes --only-binary=:all: -r requirements-actions.txt
+      - name: Check GitHub Actions security
+        if: matrix.python-version == '3.12'
+        run: zizmor --offline --strict-collection --collect=workflows .
