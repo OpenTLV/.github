@@ -174,9 +174,9 @@ Record date, repository, default-branch commit, observer, screenshots or URLs,
 and results in the table below. If GitHub caches an old state, retry after it
 refreshes and record the observed behavior. Restore test fixtures afterward.
 
-Adding the Chore form and policy clarifications for issue #2 requires a new
-deployment verification run. The historical results below cover the bootstrap
-commit only; they do not verify the new form's rendering or submission behavior.
+Changes to forms and policies require deployment verification against the
+changed default-branch commit. The baseline results below do not establish
+rendering or submission behavior for the Chore form added in issue #2.
 
 For issue #11, verify Task and Epic rendering and required-field validation in
 an eligible consuming repository after deployment. Check that Chore can be
@@ -187,36 +187,43 @@ of these new or changed forms.
 
 ## Verification record
 
-Bootstrap baseline, 2026-11-16: the live GitHub connector confirmed that
-OpenTLV/.github and OpenTLV/opentlv are public, non-archived repositories with
-default branch main. Local checkouts initially contain only README/LICENSE in
-the community repository and LICENSE in opentlv. No available implementation or
-release capabilities are asserted by the profile.
+The baseline below records observations from 2026-11-16 for merged commit
+`feea457affa5813e13874e2434538c76c3072aa1`. It is dated evidence, not a statement
+of current settings or verification of later changes. OpenTLV/.github and
+OpenTLV/opentlv were confirmed public and non-archived, with `main` as their
+default branch. The profile did not claim implementation or release capabilities.
 
-| Evidence | Status |
+### Recorded results
+
+| Evidence | Recorded result |
 | --- | --- |
-| Final merged commit `feea457affa5813e13874e2434538c76c3072aa1` | Verified on 2026-11-16: clean local checkout; `pre-commit run --all-files` and standalone `reuse lint` passed; REUSE covered 20/20 files |
-| Community quality CI | [Run 43891801580](https://github.com/OpenTLV/.github/actions/runs/43891801580) passed on the same merged commit; job logs confirm both community-files and reuse hooks passed |
-| Profile rendering on GitHub | Verified on 2026-11-16 in a separate signed-out headless Chrome session: headings, paragraphs, and links display correctly on the [organization overview](https://github.com/OpenTLV) |
-| Public documentation links | All 17 unique HTTPS links in repository Markdown returned HTTP 200 on 2026-11-16; profile claims were checked against the live public repositories |
-| Inherited conduct, contribution, and security policies | Verified on 2026-11-16 in [opentlv Community Standards](https://github.com/OpenTLV/opentlv/community); [security policy](https://github.com/OpenTLV/opentlv/security/policy) displays the shared policy, while the consuming repository's tree contains only LICENSE |
-| Inherited support links and PR template | Pending signed-in UI verification |
-| Issue forms, required fields, and local template/config overrides | Pending signed-in UI verification; the consuming repository's issue chooser redirects signed-out requests to login |
+| Local quality checks | A clean checkout of the baseline commit passed `pre-commit run --all-files` and a standalone `reuse lint`; REUSE covered 20/20 files |
+| Community quality CI | [Run 43891801580](https://github.com/OpenTLV/.github/actions/runs/43891801580) passed on the baseline commit; job logs confirm both community-files and reuse hooks passed |
+| Profile rendering on GitHub | Signed-out inspection of the [organization overview](https://github.com/OpenTLV) confirmed that headings, paragraphs, and links displayed correctly |
+| Public documentation links | All 17 unique HTTPS links in repository Markdown returned HTTP 200; profile claims were checked against the public repositories |
+| Inherited conduct, contribution, and security policies | [opentlv Community Standards](https://github.com/OpenTLV/opentlv/community) showed the inherited policies; the [security policy](https://github.com/OpenTLV/opentlv/security/policy) displayed the shared policy while the consuming repository's tree contained only LICENSE |
+
+### Checks requiring authenticated verification
+
+The following checks had no completed verification recorded in the baseline.
+They remain pending in this record until new dated evidence is added. A public
+page or an unavailable inspection does not establish an authenticated setting.
+
+| Check | Recorded status and remaining work |
+| --- | --- |
+| Inherited support links and PR template | Pending signed-in UI verification using the deployment acceptance procedure |
+| Issue forms, required fields, and local template/config overrides | Pending signed-in UI verification; signed-out access to the consuming repository's issue chooser redirected to login |
 | Private vulnerability reporting setting and non-maintainer visibility | Pending authenticated setup and verification; public advisory pages alone do not establish whether reporting is enabled |
-| Dependency graph | Disabled in the maintainer-provided screenshot on 2026-11-16; enabling and verifying the repository setting remains pending |
+| Dependency graph | A maintainer-provided screenshot showed it disabled on 2026-11-16; enabling and verifying the repository setting remains pending in this record |
 | Dependabot alerts and security updates | Pending authenticated setup and verification; the committed version-update configuration does not establish these settings |
 
-The local verification artifacts are saved under the ignored
-`.cache/deployment-verification/` directory: `profile.png`, public page HTML,
-`results.json`, and `links.json`. They are local evidence, not published assets.
-The checks above apply to the merged implementation commit, before this
-verification-record update.
+The baseline verification did not create test issues, test repositories, or
+override fixtures, and did not change reporting settings. Complete the pending
+checks with the appropriate authorized accounts using the procedure above, then
+record the date, tested commit, repository, and observed result. Do not mark
+deployment acceptance complete until evidence for the required checks is
+recorded and repository-local quality checks pass.
 
-Authenticated UI checks could not be completed in this session because both
-available Computer Use entry points reported that the native pipe was
-unavailable. No test issues, test repositories, or override fixtures were
-created, and no reporting settings were changed. Complete the remaining checks
-using the procedure above when authenticated browser access is available.
-
-Do not close the parent issue as complete until these checks have recorded
-evidence and the repository-local quality checks pass.
+Keep sanitized verification artifacts outside Git in the ignored
+`.cache/deployment-verification/` directory. Record public evidence URLs and
+results here so the status can be understood without access to local files.
