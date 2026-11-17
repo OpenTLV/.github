@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Document GitHub-only private security routes, the responsible maintainer, conduct-reporting options, and remaining contact and verification limits. (#28)
 - Hash-lock the Python development dependency graph and run local Python hooks from the verified environment, with reproducible update guidance. (#23)
 - Replace session-specific deployment notes with dated verification evidence and explicit pending authenticated checks. (#21)
 - Include the issue number directly after the type prefix in new branch names for issue-related work. (#26)

@@ -52,9 +52,64 @@ proposal requiring separate approval; community defaults do not enforce it.
    [GitHub setup instructions](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository).
    Check **Security > Advisories** from a non-maintainer account for the reporting
    button. Do not submit a fabricated vulnerability to test delivery.
-4. Publish a monitored private reporting contact locally if private reporting is
-   unavailable. Document release support locally when releases exist.
+4. Verify the private fallback and conduct-reporting routes described below.
+   Document release support locally when releases exist.
 5. Review issue and pull request creation screens and links as described below.
+
+## Private reporting routes and verification
+
+The responsible organization contact is
+[@marekcingel](https://github.com/marekcingel). OpenTLV uses GitHub-only reporting:
+the affected repository's private vulnerability form is primary, and the
+[community repository's private form](https://github.com/OpenTLV/.github/security/advisories/new)
+is the fallback for unavailable repository reporting or cross-repository findings.
+A profile link identifies the owner; it is not a private message channel.
+
+On 2026-11-17, read-only checks of public repository metadata and
+`GET /repos/{owner}/{repo}/private-vulnerability-reporting` returned:
+
+| Repository | Visibility/state | Private vulnerability reporting |
+| --- | --- | --- |
+| OpenTLV/.github | Public, not archived; default branch `main` | `enabled: true` |
+| OpenTLV/opentlv | Public, not archived; default branch `main` | `enabled: true` |
+
+This confirms configured enablement on that date for these two repositories,
+not every OpenTLV repository. It does not prove reporter-side form access,
+notification delivery, monitoring, or response time. No report was submitted,
+no settings were changed, and no vulnerability details or credentials were used.
+The older baseline below is historical evidence; this check updates only private
+reporting configuration status for the two named repositories.
+
+Maintainers should keep these routes usable:
+
+1. An owner/admin verifies private reporting in each eligible public repository
+   and in the central fallback repository. Where a feature is unavailable for a
+   visibility type or plan, record that limitation and verify the central route;
+   inherited policies and organization configuration assignment are not proof.
+2. Using a signed-in non-maintainer account, open **Security > Advisories** and
+   inspect **Report a vulnerability** without submitting a fabricated finding.
+   Record the date, repository, account role, result, and sanitized evidence URL
+   or screenshot reference. This reporter-side check remains pending here.
+3. The responsible contact confirms access to central private reports and reviews
+   notification preferences and monitoring arrangements. Recheck after access or
+   maintainer changes. Notification delivery has not been tested by this audit.
+4. For conduct, inspect whether **Report to repository admins** is available to
+   ordinary users and who receives it. Its availability and delivery in these
+   repositories remain pending verification. Document GitHub Support's private
+   abuse-reporting route as the platform fallback, not as an OpenTLV inbox.
+
+Private vulnerability reporting is a feature of eligible public repositories;
+do not assume equivalent availability in private/internal repositories. See
+[GitHub setup guidance](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository).
+No paid feature or repository setting is enabled by this documentation.
+
+There is no independent fallback if GitHub reporting itself is unavailable.
+Conduct reports outside GitHub's reporting controls also lack a direct private
+project channel. The maintainer has selected a GitHub-account-only contact;
+resolving these limits requires separately designating an appropriate monitored
+private contact. Until then, do not redirect sensitive reports to public issues
+or misuse security advisories for conduct complaints. Track remaining verification
+and contact limitations in [issue #28](https://github.com/OpenTLV/.github/issues/28).
 
 ## Dependency security settings
 

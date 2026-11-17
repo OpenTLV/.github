@@ -2,15 +2,30 @@
 
 ## Reporting a vulnerability
 
-Do not publish exploit details, secrets, or personal data in issues or pull
-requests. Open the affected repository's **Security > Advisories** page and use
-**Report a vulnerability**, if available, to submit a private report.
+Do not publish undisclosed vulnerabilities, exploit details, credentials, tokens,
+or personal data in public issues, pull requests, discussions, or profile comments.
+Use a private reporting route:
 
-Private vulnerability reporting must be enabled separately in each repository;
-this policy does not enable it. If the button is unavailable, use a private
-security contact explicitly published by that repository's maintainers. If no
-private contact exists, open an issue asking only for a private reporting
-channel. Withhold all sensitive details until a private channel is established.
+1. Open the affected repository's **Security > Advisories** page and select
+   **Report a vulnerability**. For OpenTLV/opentlv, use its
+   [private vulnerability report form](https://github.com/OpenTLV/opentlv/security/advisories/new).
+2. If the affected repository does not offer private reporting, or the finding
+   spans repositories, use the
+   [central OpenTLV private report form](https://github.com/OpenTLV/.github/security/advisories/new).
+   Name the affected repository in the private report so it can be routed.
+
+The responsible organization contact is
+[@marekcingel](https://github.com/marekcingel). A GitHub profile is public and
+does not provide private direct messaging; do not post a report there or tag the
+account in a public issue to disclose details. The private forms above are the
+reporting channels. Sign in to GitHub to use them.
+
+Private reporting must be enabled separately in each eligible public repository;
+this policy does not enable it or guarantee availability for other visibility
+types. If neither private form is available, retain the report privately and wait
+until a working private route is available. There is no email or off-GitHub
+fallback published by this policy. Do not submit vulnerability details to public
+issues or GitHub's abuse-reporting service as a substitute for reporting to OpenTLV.
 
 Include the affected repository and revision, affected versions if known,
 impact, reproduction steps, and a minimal sanitized proof of concept. Share
@@ -23,6 +38,12 @@ The affected repository's maintainers own triage and remediation. Keep the
 report and reproduction material in the private reporting channel. Confirm the
 affected revisions and impact, request missing details privately, and assess
 severity and affected components before deciding on a fix.
+
+The responsible contact is responsible for monitoring central private reports and
+coordinating routing with affected maintainers. Maintain access to private reports
+and notification preferences when maintainers change. Periodically verify the
+reporting routes using the
+[setup and verification procedure](https://github.com/OpenTLV/.github/blob/main/docs/adoption.md#private-reporting-routes-and-verification).
 
 For cross-repository findings, coordinate privately with the relevant component
 maintainers and share only the information they need. Agree on remediation,
