@@ -15,6 +15,11 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 MAX_FILE_BYTES = 1024 * 1024
 REPOSITORY_FILES = "/OpenTLV/.github/blob/main/"
+BINARY_SUFFIXES = frozenset({
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".pdf",
+    ".zip", ".gz", ".7z", ".exe", ".dll", ".so", ".pyc",
+    ".woff", ".woff2", ".ttf", ".sqlite", ".db", ".docx", ".xlsx", ".pptx",
+})
 
 
 def without_fences(text: str) -> str:
@@ -157,10 +162,16 @@ def check(root: Path = ROOT) -> list[str]:
         if path.stat().st_size > MAX_FILE_BYTES:
             errors.append(f"{name}: file exceeds the 1 MiB repository limit")
             continue
+        if path.suffix.lower() in BINARY_SUFFIXES:
+            errors.append(f"{name}: binary asset type is not approved")
+            continue
         try:
             text = path.read_bytes().decode("utf-8")
         except UnicodeDecodeError:
-            errors.append(f"{name}: expected UTF-8 text; review binary asset checks")
+            errors.append(f"{name}: expected UTF-8 text; binary assets are not approved")
+            continue
+        if "\0" in text:
+            errors.append(f"{name}: unexpected binary content (NUL byte)")
             continue
         if "\r" in text or text.startswith("\ufeff"):
             errors.append(f"{name}: use UTF-8 without BOM and LF line endings")
@@ -216,6 +227,28 @@ def check_form(name: str, data: object) -> list[str]:
             continue
         if not attrs.get("value" if kind == "markdown" else "label"):
             errors.append(f"{name}: field missing content or label")
+        if kind in {"dropdown", "checkboxes"}:
+            options = attrs.get("options")
+            if not isinstance(options, list) or not options:
+                errors.append(f"{name}: {kind} options must be a non-empty list")
+            else:
+                labels = set()
+                for index, option in enumerate(options):
+                    if kind == "dropdown":
+                        label = option
+                    elif isinstance(option, dict):
+                        label = option.get("label")
+                        if "required" in option and not isinstance(option["required"], bool):
+                            errors.append(f"{name}: checkbox option {index + 1} required must be boolean")
+                    else:
+                        errors.append(f"{name}: checkbox option {index + 1} must be a mapping")
+                        continue
+                    if not isinstance(label, str) or not label.strip():
+                        errors.append(f"{name}: {kind} option {index + 1} needs a non-empty string label")
+                    elif label in labels:
+                        errors.append(f"{name}: {kind} duplicate option label {label}")
+                    else:
+                        labels.add(label)
         if kind != "markdown":
             identifier = item.get("id")
             if not isinstance(identifier, str) or not re.fullmatch(r"[A-Za-z0-9_-]+", identifier):
