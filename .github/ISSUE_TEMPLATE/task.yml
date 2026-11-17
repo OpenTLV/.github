@@ -1,0 +1,48 @@
+name: Task
+description: Plan defined implementation work with acceptance criteria and validation.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for implementation work that is neither a bug report nor a feature proposal.
+        Use Chore for repository maintenance and Epic for coordinated work across child issues.
+        For vulnerabilities, follow https://github.com/OpenTLV/.github/blob/main/SECURITY.md.
+        Remove secrets and personal information before submitting.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should this task accomplish, and why is it needed?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Describe the work included and any important exclusions.
+    validations:
+      required: true
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Technical requirements
+      description: Note relevant interfaces, compatibility requirements, or implementation constraints.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable outcomes that establish completion.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and risks
+      description: Link related work and note blockers or cross-repository coordination.
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation plan
+      description: Describe the tests, reviews, or other evidence that will verify the outcomes.
+    validations:
+      required: true

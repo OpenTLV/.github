@@ -1,0 +1,51 @@
+name: Epic
+description: Coordinate larger work through native GitHub sub-issues.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for larger coordinated work that will be split into child issues.
+        After creation, use GitHub's Create sub-issue or Add existing issue controls for tracking.
+        The child-issue plan below describes the breakdown; do not duplicate progress in a manual checklist.
+        For vulnerabilities, follow https://github.com/OpenTLV/.github/blob/main/SECURITY.md.
+        Remove secrets and personal information before submitting.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What problem does the epic address, and why is coordinated work needed?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and exclusions
+      description: Define the work included and what is explicitly outside this epic.
+    validations:
+      required: true
+  - type: textarea
+    id: outcomes
+    attributes:
+      label: Expected outcomes
+      description: Describe the results for users, contributors, or maintainers.
+    validations:
+      required: true
+  - type: textarea
+    id: children
+    attributes:
+      label: Child-issue plan
+      description: Outline the work breakdown and sequencing in plain text; track actual children with native sub-issues after creation.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and risks
+      description: Note external dependencies, blockers, and coordination between components or repositories.
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Define epic-level completion criteria and evidence beyond individual child tasks.
+    validations:
+      required: true

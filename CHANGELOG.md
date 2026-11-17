@@ -7,6 +7,8 @@ Notable changes are recorded here using
 
 ### Added
 
+- Shared Task and Epic issue forms with native sub-issue tracking guidance. (#11)
+- Optional Validation field in the Chore form. (#11)
 - GitHub Free governance baseline and procedures for repository audits and approved settings changes. (#10)
 - Repository setup and verification guidance for dependency graph, Dependabot alerts, and security updates. (#3)
 - Issue and PR label conventions, including `chore` for repository maintenance and tooling. (#3)

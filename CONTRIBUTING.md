@@ -17,6 +17,32 @@ Explain the motivation, resulting behavior, validation, and limitations in the
 pull request. Maintainers review changes before merging; no response time or
 release schedule is guaranteed.
 
+## Choosing an issue form
+
+| Form | Use it for |
+| --- | --- |
+| Bug report | Reproducible defects and unexpected behavior |
+| Feature request | Proposals for new capabilities or improvements |
+| Task | Defined implementation work that is neither a bug report nor a feature proposal |
+| Chore | Repository maintenance, tooling, dependencies, or documentation upkeep |
+| Epic | Larger coordinated work split into child issues |
+
+For a Task, describe the objective, scope, applicable technical requirements,
+acceptance criteria, dependencies or risks, and validation plan. Chore keeps its
+required motivation, scope, and acceptance fields; its Validation field is optional.
+
+For an Epic, describe the objective, scope and exclusions, expected outcomes,
+planned work breakdown, dependencies or risks, and epic-level acceptance criteria.
+After creating it, use GitHub's **Create sub-issue** or **Add existing issue**
+controls to track the actual children. The form does not create those relationships
+automatically. Keep the child-issue plan descriptive; use native sub-issue progress
+instead of maintaining a duplicate checklist in the description. See
+[GitHub's sub-issue guide](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/adding-sub-issues).
+
+Security vulnerabilities belong in private reporting, not these public forms.
+Follow the affected repository's security policy or the shared guidance at
+<https://github.com/OpenTLV/.github/blob/main/SECURITY.md>.
+
 ## Branch names
 
 Create a branch from the destination repository's current default branch. Use
