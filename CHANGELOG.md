@@ -7,6 +7,7 @@ Notable changes are recorded here using
 
 ### Added
 
+- GitHub Free governance baseline and procedures for repository audits and approved settings changes. (#10)
 - Repository setup and verification guidance for dependency graph, Dependabot alerts, and security updates. (#3)
 - Issue and PR label conventions, including `chore` for repository maintenance and tooling. (#3)
 - Monthly Dependabot updates for SHA-pinned workflow actions.

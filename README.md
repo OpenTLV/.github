@@ -8,6 +8,7 @@ Organization profile, community policies, and shared GitHub templates for OpenTL
 - [Security reporting](SECURITY.md)
 - [Support](SUPPORT.md)
 - [Adoption, overrides, and deployment verification](docs/adoption.md)
+- [Repository governance baseline](docs/governance.md)
 - [Licensing and attribution](docs/licensing.md)
 - [Changelog](CHANGELOG.md)
 
