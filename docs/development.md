@@ -64,6 +64,46 @@ tables and URLs, and a top-level heading is not required because the PR template
 starts at heading level two. Regression tests exercise valid and invalid files.
 Local validation does not establish GitHub form rendering or submission behavior.
 
+### Issue-form option checks
+
+Dropdown and checkbox fields must define a non-empty `attributes.options` list.
+Dropdown entries must be nonblank strings. Checkbox entries must be mappings
+with a nonblank string `label`; an optional `required` value must be a YAML
+boolean. Option labels must be unique within each field. Quote numeric-looking
+or boolean-looking dropdown choices to keep them strings when YAML is parsed.
+Checkbox labels may contain Markdown.
+
+These checks cover option structure, not the complete GitHub form schema or
+rendering behavior. Follow GitHub's [form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)
+for other attributes and verify form behavior after deployment when needed.
+
+### Text files and binary assets
+
+There are currently **no approved binary asset paths or types** in this
+repository. All checked files must remain UTF-8 text without NUL bytes and meet
+the existing whitespace, newline, and 1 MiB limits. The checker rejects common
+binary extensions (the case-insensitive `BINARY_SUFFIXES` set in
+`scripts/check_community.py`), invalid UTF-8, and NUL-containing content, including
+when a file has been renamed to a text extension. This is a text policy, not a
+complete file-format detector; other text-encoded payloads still require review.
+
+An image suffix or a location under `profile/` does not grant an exception.
+Verification screenshots and temporary artifacts stay outside Git in ignored
+`.cache/`. Do not add an ignored directory merely to hide an intended repository
+asset from validation.
+
+If a genuine need arises, such as an organization profile image, propose the
+asset and its checker exception together in a reviewed PR. Identify each exact
+repository-relative path and allowed format; prefer a small PNG or JPEG under
+`profile/assets/` for that use case. These are candidate formats and locations,
+not approved exceptions. Document purpose, source, redistribution rights, and
+[licensing/attribution](licensing.md). The implementation must verify format
+content rather than trusting an extension, reject malformed files and path
+escapes/symlinks, retain the 1 MiB cap, and add positive and negative regression
+tests. Keep text checks on every other file; no directory-wide or suffix-only
+bypass is permitted. No binary exception is implemented until an asset actually
+requires one.
+
 ### Local link and conflict-marker checks
 
 The community checker validates ordinary inline Markdown links and images,

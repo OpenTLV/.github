@@ -5,6 +5,8 @@ import subprocess
 import tempfile
 import unittest
 
+import yaml
+
 from scripts.check_community import MAX_FILE_BYTES, check
 
 
@@ -56,6 +58,78 @@ class CommunityValidationTests(unittest.TestCase):
         errors = check(self.root)
         self.assertTrue(any("missing description" in e for e in errors))
         self.assertTrue(any("form needs body fields" in e for e in errors))
+
+    def write_choice_form(self, kind, attributes):
+        self.write(".github/ISSUE_TEMPLATE/choices.yml", yaml.safe_dump({
+            "name": "Choices",
+            "description": "Test a choice field.",
+            "body": [{"type": kind, "id": "choices", "attributes": {
+                "label": "Choose", **attributes,
+            }}],
+        }).encode())
+
+    def test_valid_choice_options(self):
+        cases = (
+            ("dropdown", {"options": ["One", "Two"]}),
+            ("dropdown", {"options": ["One"], "multiple": True, "default": 0}),
+            ("checkboxes", {"options": [
+                {"label": "I agree", "required": True},
+                {"label": "Optional", "required": False},
+                {"label": "**Markdown** [policy](https://example.org)"},
+            ]}),
+        )
+        for kind, attributes in cases:
+            with self.subTest(kind=kind, attributes=attributes):
+                self.write_choice_form(kind, attributes)
+                self.assertEqual(check(self.root), [])
+
+    def test_choice_options_must_be_nonempty_lists(self):
+        for kind in ("dropdown", "checkboxes"):
+            for attributes in ({}, {"options": None}, {"options": []},
+                               {"options": "One"}, {"options": {"label": "One"}}):
+                with self.subTest(kind=kind, attributes=attributes):
+                    self.write_choice_form(kind, attributes)
+                    self.assertTrue(any("options must be a non-empty list" in e
+                                        for e in check(self.root)))
+
+    def test_dropdown_option_types_and_duplicates(self):
+        for options in ([None], [True], [1], [""], ["  "], [[]],
+                        [{"label": "One"}], ["One", "One"]):
+            with self.subTest(options=options):
+                self.write_choice_form("dropdown", {"options": options})
+                self.assertTrue(any("dropdown option" in e or "duplicate option" in e
+                                    for e in check(self.root)))
+
+    def test_checkbox_option_structure(self):
+        for options in (["One"], [None], [False], [[]], [{}], [{"label": ""}],
+                        [{"label": "  "}], [{"label": 1}],
+                        [{"label": "One", "required": "true"}],
+                        [{"label": "One", "required": 1}],
+                        [{"label": "One", "required": None}],
+                        [{"label": "One"}, {"label": "One", "required": True}]):
+            with self.subTest(options=options):
+                self.write_choice_form("checkboxes", {"options": options})
+                self.assertTrue(any("checkbox option" in e or "checkboxes option" in e
+                                    or "duplicate option" in e for e in check(self.root)))
+
+    def test_unexpected_binary_files_are_rejected_everywhere(self):
+        for name, content in (
+            ("unexpected.bin", b"\xff\xfe\x80"),
+            ("profile/assets/logo.png", b"\x89PNG\r\n\x1a\n"),
+            ("docs/renamed.md", b"\xff\xfe\x80"),
+            ("with-nul.txt", b"valid UTF-8\0but not text\n"),
+            ("ascii.PDF", b"%PDF-1.7\nASCII-only content\n"),
+            ("renamed.data", b"\0\x01\x02\n"),
+        ):
+            self.write(name, content)
+        errors = check(self.root)
+        for name in ("unexpected.bin", "docs/renamed.md"):
+            self.assertTrue(any(e.startswith(f"{name}: expected UTF-8 text") for e in errors), errors)
+        for name in ("profile/assets/logo.png", "ascii.PDF"):
+            self.assertTrue(any(e.startswith(f"{name}: binary asset type is not approved")
+                                for e in errors), errors)
+        self.assertTrue(any("with-nul.txt: unexpected binary content" in e for e in errors), errors)
+        self.assertTrue(any("renamed.data: unexpected binary content" in e for e in errors), errors)
 
     def test_same_repository_links_and_fragments(self):
         self.write("docs/guide.md", "# Caf\u00e9 & *Setup*!\n\n## Again\n\n## Again\n".encode())
