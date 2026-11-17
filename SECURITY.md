@@ -13,19 +13,22 @@ Use a private reporting route:
    spans repositories, use the
    [central OpenTLV private report form](https://github.com/OpenTLV/.github/security/advisories/new).
    Name the affected repository in the private report so it can be routed.
+3. If GitHub reporting is unavailable or you need a private alternative, email
+   [cingelmarekmt@gmail.com](mailto:cingelmarekmt@gmail.com), the organization
+   contact maintained by Marek Cingel (@marekcingel).
 
 The responsible organization contact is
 [@marekcingel](https://github.com/marekcingel). A GitHub profile is public and
 does not provide private direct messaging; do not post a report there or tag the
-account in a public issue to disclose details. The private forms above are the
-reporting channels. Sign in to GitHub to use them.
+account in a public issue to disclose details. Use the private forms or email
+above. The GitHub forms require sign-in; email does not require a GitHub account.
 
 Private reporting must be enabled separately in each eligible public repository;
 this policy does not enable it or guarantee availability for other visibility
-types. If neither private form is available, retain the report privately and wait
-until a working private route is available. There is no email or off-GitHub
-fallback published by this policy. Do not submit vulnerability details to public
-issues or GitHub's abuse-reporting service as a substitute for reporting to OpenTLV.
+types. If neither private form is available, use the email fallback. If you
+cannot reach any listed route, retain sensitive details privately rather than
+posting publicly. Do not submit vulnerability details to public issues or
+GitHub's abuse-reporting service as a substitute for reporting to OpenTLV.
 
 Include the affected repository and revision, affected versions if known,
 impact, reproduction steps, and a minimal sanitized proof of concept. Share
@@ -39,9 +42,10 @@ report and reproduction material in the private reporting channel. Confirm the
 affected revisions and impact, request missing details privately, and assess
 severity and affected components before deciding on a fix.
 
-The responsible contact is responsible for monitoring central private reports and
-coordinating routing with affected maintainers. Maintain access to private reports
-and notification preferences when maintainers change. Periodically verify the
+The designated maintainer is responsible for monitoring central private reports
+and the contact mailbox, and coordinating with affected maintainers. Maintain
+mailbox and private-report access and notification preferences when maintainers
+change. Periodically verify the
 reporting routes using the
 [setup and verification procedure](https://github.com/OpenTLV/.github/blob/main/docs/adoption.md#private-reporting-routes-and-verification).
 

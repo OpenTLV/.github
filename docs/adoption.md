@@ -59,11 +59,14 @@ proposal requiring separate approval; community defaults do not enforce it.
 ## Private reporting routes and verification
 
 The responsible organization contact is
-[@marekcingel](https://github.com/marekcingel). OpenTLV uses GitHub-only reporting:
-the affected repository's private vulnerability form is primary, and the
+[@marekcingel](https://github.com/marekcingel), with the maintainer-designated
+private contact [cingelmarekmt@gmail.com](mailto:cingelmarekmt@gmail.com).
+The affected repository's private vulnerability form is primary, and the
 [community repository's private form](https://github.com/OpenTLV/.github/security/advisories/new)
-is the fallback for unavailable repository reporting or cross-repository findings.
-A profile link identifies the owner; it is not a private message channel.
+routes unavailable repository reporting or cross-repository findings centrally.
+The email contact is an independent-of-GitHub fallback for security reports and
+the direct private project contact for conduct concerns. A profile link identifies
+the owner; it is not a private message channel.
 
 On 2026-11-17, read-only checks of public repository metadata and
 `GET /repos/{owner}/{repo}/private-vulnerability-reporting` returned:
@@ -90,9 +93,12 @@ Maintainers should keep these routes usable:
    inspect **Report a vulnerability** without submitting a fabricated finding.
    Record the date, repository, account role, result, and sanitized evidence URL
    or screenshot reference. This reporter-side check remains pending here.
-3. The responsible contact confirms access to central private reports and reviews
-   notification preferences and monitoring arrangements. Recheck after access or
-   maintainer changes. Notification delivery has not been tested by this audit.
+3. The responsible contact confirms access to central private reports and the
+   mailbox, and reviews notification preferences and monitoring arrangements.
+   Recheck after access or maintainer changes. Email publication was explicitly
+   authorized by the maintainer on 2026-11-17; mailbox delivery and GitHub
+   notification delivery have not been tested. Do not send test messages or
+   fabricated reports without a separately agreed verification procedure.
 4. For conduct, inspect whether **Report to repository admins** is available to
    ordinary users and who receives it. Its availability and delivery in these
    repositories remain pending verification. Document GitHub Support's private
@@ -103,13 +109,13 @@ do not assume equivalent availability in private/internal repositories. See
 [GitHub setup guidance](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository).
 No paid feature or repository setting is enabled by this documentation.
 
-There is no independent fallback if GitHub reporting itself is unavailable.
-Conduct reports outside GitHub's reporting controls also lack a direct private
-project channel. The maintainer has selected a GitHub-account-only contact;
-resolving these limits requires separately designating an appropriate monitored
-private contact. Until then, do not redirect sensitive reports to public issues
-or misuse security advisories for conduct complaints. Track remaining verification
-and contact limitations in [issue #28](https://github.com/OpenTLV/.github/issues/28).
+The published mailbox supplies the private fallback outside GitHub and a direct
+project conduct route. Its designation does not establish tested delivery or a
+response deadline. An independent project contact for conduct reports involving
+the designated maintainer has not been appointed; the conduct policy explains
+available escalation routes and that limitation. Do not redirect sensitive
+reports to public issues or misuse security advisories for conduct complaints.
+Track remaining verification in [issue #28](https://github.com/OpenTLV/.github/issues/28).
 
 ## Dependency security settings
 
