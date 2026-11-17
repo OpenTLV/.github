@@ -11,11 +11,13 @@ and when someone officially represents the project.
 
 ## Reporting and enforcement
 
-The responsible project conduct contact is
-[@marekcingel](https://github.com/marekcingel). The profile identifies the
-maintainer; it is public and does not provide private direct messaging. Do not
-post conduct reports, identities, or evidence in public issues, discussions, or
-profile comments.
+Report conduct concerns privately to Marek Cingel
+([@marekcingel](https://github.com/marekcingel)) at
+[cingelmarekmt@gmail.com](mailto:cingelmarekmt@gmail.com). This contact also covers
+project conduct that cannot be reported through GitHub's content controls.
+Include the relevant context and only the information needed to investigate.
+Do not post conduct reports, identities, or evidence in public issues,
+discussions, or profile comments. A GitHub profile is not a private message channel.
 
 For abusive GitHub content, use the content's **Report** menu and select
 **Report to repository admins** when offered. This privately routes the report
@@ -26,12 +28,13 @@ is needed, use GitHub's
 Follow GitHub's [reporting instructions](https://docs.github.com/en/communities/maintaining-your-safety-on-github/reporting-abuse-or-spam).
 
 GitHub Support handles GitHub platform abuse; it is not a private inbox for the
-OpenTLV maintainer or a guarantee of project moderation. This GitHub-only policy
-does not publish an email or a private project channel for conduct that cannot
-be reported through GitHub's content-reporting controls. Keep sensitive material
-private if no suitable route is available. Do not use vulnerability reports for
-conduct complaints. An additional project-private channel requires a maintained
-contact to be designated and published first.
+OpenTLV maintainer or a guarantee of project moderation. If the report concerns
+the designated contact, do not send it to that person; use an uninvolved
+maintainer's explicitly published private contact when available, or GitHub
+Support for GitHub platform abuse. No independent project contact is currently
+designated for other conflicts of interest. Keep sensitive material private if
+no suitable independent route is available. Do not use vulnerability reports for
+conduct complaints.
 
 Maintainers should handle reports discreetly, hear relevant context, and avoid
 conflicts of interest. Confidentiality cannot be guaranteed beyond the people
