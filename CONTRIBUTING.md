@@ -62,6 +62,13 @@ Use `feat/` consistently rather than `feature/`.
 Choose the prefix that describes the main purpose of the change, for example
 `fix/broken-contribution-links`.
 
+## Commit messages
+
+Write a concise English commit message describing the change. When the commit
+relates to an issue, include its number in parentheses at the end of the subject,
+for example `Document organization-wide changelog conventions (#17)`.
+For an issue in another repository, use `(owner/repo#17)` instead.
+
 ## Pull requests
 
 ### Title
@@ -118,6 +125,77 @@ solely because a development tool or check is new.
 Branch prefixes and labels serve separate purposes: a `chore/` branch does not
 automatically apply a label. Contributors without label permissions can leave
 label selection to maintainers.
+
+## Changelogs
+
+For future changelog updates across OpenTLV repositories, use a root
+`CHANGELOG.md` following [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/)
+and [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
+Every changelog must begin with the exact standard introduction shown in the
+example below, including both reference links.
+
+- Keep `## [Unreleased]` as the first version section. Add notable changes there
+  as work lands, grouped under `Added`, `Changed`, `Deprecated`, `Removed`,
+  `Fixed`, or `Security` where applicable; omit empty categories.
+- Keep released versions below Unreleased in reverse chronological order
+  (newest release first).
+- **Prepend every new entry at the top of its category**, above all existing
+  entries in that category. Never append it below older entries. This is an
+  explicit OpenTLV convention in addition to Keep a Changelog.
+- Preserve existing entries when adding new ones. Avoid unnecessary reordering
+  or rewriting of historical release notes.
+- Write clear, user-facing descriptions of notable changes. Curate the notes;
+  do not generate a changelog by dumping Git commit logs.
+- At release time, move the relevant Unreleased entries into a section named
+  `## [<version>] - YYYY-MM-DD`, using the actual version and ISO 8601 release
+  date. Keep Unreleased above it for subsequent work; do not invent releases
+  for policy updates.
+- Use the `v` prefix in Git release tags, for example `v1.0.0`, but omit it
+  from changelog version headings: `## [1.0.0] - YYYY-MM-DD`.
+- Link version headings to tags or comparisons where applicable. After a
+  release, update the Unreleased comparison to start at the latest release tag.
+
+Every OpenTLV `CHANGELOG.md` must start with the exact introduction shown below,
+including the Keep a Changelog and Semantic Versioning links. The versions,
+dates, and changes after the introduction are illustrative examples.
+
+```markdown
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- Newest added feature.
+- Previously documented feature.
+
+### Fixed
+
+- Newest bug fix.
+- Previously documented bug fix.
+
+## [0.9.0] - 2026-11-16
+
+### Changed
+
+- Improve configuration diagnostics.
+
+## [0.8.0] - 2026-10-01
+
+### Added
+
+- Initial configuration support.
+```
+
+For example, in a repository with tags `v0.8.0` and `v0.9.0`, define
+`[Unreleased]` as `https://github.com/OWNER/REPO/compare/v0.9.0...HEAD` and
+`[0.9.0]` as `https://github.com/OWNER/REPO/compare/v0.8.0...v0.9.0`, replacing
+`OWNER/REPO` and tag names with the destination repository's actual values.
 
 ## Working on this community repository
 
@@ -184,8 +262,8 @@ when referring to central policies. Verify claims and public project links
 against current repositories. Avoid announcing planned capabilities as available.
 Record user-visible policy and configuration changes under Unreleased in
 CHANGELOG.md. End each entry associated with an issue with its number in
-parentheses, for example `(#1)`. Follow Keep a Changelog: group unreleased changes
-under Added, Changed, Deprecated, Removed, Fixed, or Security as applicable.
+parentheses, for example `(#1)`. Follow the shared changelog rules above,
+including prepending new entries within each category.
 Record deployment evidence and pending checks in docs/adoption.md rather than
 adding status sections to the changelog. At release time, move entries under
 the actual version and release date; do not invent releases for policy updates.
