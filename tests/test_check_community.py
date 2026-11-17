@@ -57,6 +57,126 @@ class CommunityValidationTests(unittest.TestCase):
         self.assertTrue(any("missing description" in e for e in errors))
         self.assertTrue(any("form needs body fields" in e for e in errors))
 
+    def test_same_repository_links_and_fragments(self):
+        self.write("docs/guide.md", "# Caf\u00e9 & *Setup*!\n\n## Again\n\n## Again\n".encode())
+        self.write("README.md", (
+            "# Guide\n\n"
+            "[Local](docs/guide.md#caf%C3%A9--setup)\n"
+            "[Duplicate](docs/guide.md#again-1)\n"
+            "[Self](#guide)\n"
+            "[Absolute](https://github.com/OpenTLV/.github/blob/main/docs/guide.md#again)\n"
+            "<https://github.com/OpenTLV/.github/blob/main/docs/guide.md>\n"
+            "See https://github.com/OpenTLV/.github/blob/main/docs/guide.md.\n"
+        ).encode())
+        self.assertEqual(check(self.root), [])
+        self.write("README.md", (
+            "# Guide\n\n"
+            "[Missing](https://github.com/OpenTLV/.github/blob/main/missing.md)\n"
+            "<https://github.com/OpenTLV/.github/blob/main/missing-autolink.md>\n"
+            "[Anchor](docs/guide.md#absent)\n"
+            "[Self](#absent)\n"
+        ).encode())
+        errors = check(self.root)
+        self.assertEqual(sum("missing local link target" in e for e in errors), 2, errors)
+        self.assertEqual(sum("missing local heading anchor" in e for e in errors), 2, errors)
+
+    def test_fenced_and_inline_code_are_not_links_or_headings(self):
+        self.write("README.md", (
+            "# Guide\n\n"
+            "```markdown\n[Missing](absent.md)\n## Hidden\n```\n\n"
+            "~~~~\n<https://github.com/OpenTLV/.github/blob/main/absent.md>\n"
+            "~~~\n[Still inside](absent.md)\n~~~~\n\n"
+            "  ```\n[Indented fence](absent.md)\n  ```\n\n"
+            "`[Inline example](absent.md)`\n\n[Visible](#guide)\n"
+        ).encode())
+        self.assertEqual(check(self.root), [])
+        with (self.root / "README.md").open("ab") as stream:
+            stream.write(b"[Not a heading](#hidden)\n")
+        self.assertTrue(any("missing local heading anchor" in e for e in check(self.root)))
+
+    def test_heading_normalization_and_duplicate_collisions(self):
+        self.write("README.md", (
+            "# `GITHUB_TOKEN` and [Links](other.md) ###\n\n"
+            "## An _emphasized_  heading &amp; more!\n\n"
+            "## Same\n\n## Same\n\n## Same-1\n\n## Same\n\n"
+            "Setext heading\n=======\n\n"
+            "[Code](#github_token-and-links)\n"
+            "[Emphasis](#an-emphasized--heading--more)\n"
+            "[Second](#same-1)\n[Collision](#same-1-1)\n[Third](#same-2)\n"
+            "[Setext](#setext-heading)\n"
+        ).encode())
+        self.write("other.md", b"# Other\n")
+        self.assertEqual(check(self.root), [])
+
+    def test_repository_blob_links_require_files(self):
+        self.write("docs/guide.md", b"# Guide\n")
+        self.write("README.md", (
+            "# Guide\n\n"
+            "[Directory](https://github.com/OpenTLV/.github/blob/main/docs)\n"
+            "[Empty](https://github.com/OpenTLV/.github/blob/main/)\n"
+        ).encode())
+        errors = check(self.root)
+        self.assertEqual(sum("missing local link target" in e for e in errors), 2, errors)
+
+    def test_encoded_and_angle_wrapped_destinations(self):
+        self.write("docs/a (b).md", b"# A heading\n")
+        self.write("README.md", (
+            "# Guide\n\n"
+            "[Encoded](docs/a%20%28b%29.md#a-heading)\n"
+            "[Angle](<docs/a (b).md#a-heading>)\n"
+            "[Remote](<https://github.com/OpenTLV/.github/blob/main/docs/a%20(b).md#a-heading>)\n"
+            "[Title](docs/a%20%28b%29.md \"Optional title\")\n"
+        ).encode())
+        self.assertEqual(check(self.root), [])
+
+    def test_symlink_target_cannot_escape_repository(self):
+        with tempfile.TemporaryDirectory() as outside:
+            target = Path(outside) / "outside.md"
+            target.write_text("# Outside\n", encoding="utf-8")
+            try:
+                (self.root / "escape.md").symlink_to(target)
+            except OSError as error:
+                self.skipTest(f"symlink creation unavailable: {error}")
+            self.write("README.md", b"# Guide\n\n[Escape](escape.md#outside)\n")
+            self.assertTrue(any("unsafe local link target" in e for e in check(self.root)))
+
+    def test_links_cannot_escape_repository(self):
+        self.write("README.md", (
+            "# Guide\n\n"
+            "[Parent](../outside.md)\n"
+            "[Encoded](https://github.com/OpenTLV/.github/blob/main/%2e%2e/outside.md)\n"
+            "[Windows](%5c%5cserver%5cshare.md)\n"
+            "[Drive](C%3a/secret.md)\n"
+            "[Nul](bad%00.md)\n"
+        ).encode())
+        errors = check(self.root)
+        self.assertEqual(sum("unsafe local link target" in e for e in errors), 5, errors)
+
+    def test_external_links_and_other_refs_do_not_use_network(self):
+        self.write("README.md", (
+            "# Guide\n\n"
+            "[Other](https://example.invalid/absent.md#missing)\n"
+            "[Repo](https://github.com/other/repo/blob/main/absent.md)\n"
+            "[Tag](https://github.com/OpenTLV/.github/blob/v1.0/absent.md)\n"
+        ).encode())
+        self.assertEqual(check(self.root), [])
+
+    def test_setext_and_real_conflict_markers(self):
+        self.write("README.md", b"A valid heading\n=======\n\nAnother\n-------\n")
+        self.assertEqual(check(self.root), [])
+        for content in (
+            b"<<<<<<< HEAD\nours\n=======\ntheirs\n>>>>>>> topic\n",
+            b"<<<<<<<\nours\n=======\ntheirs\n>>>>>>>\n",
+            b"||||||| base\nold\n",
+            b"=======\n",
+        ):
+            with self.subTest(content=content):
+                self.write("README.md", content)
+                self.assertTrue(any("merge conflict marker" in e for e in check(self.root)))
+        self.write("README.md", b"# Guide\n")
+        self.write("orphan.txt", b"content\n=======\n")
+        self.assertTrue(any("orphan.txt: possible merge conflict" in e for e in check(self.root)))
+
 
 if __name__ == "__main__":
     unittest.main()
