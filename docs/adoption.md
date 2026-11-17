@@ -77,8 +77,8 @@ expected dependencies and its **Dependabot** tab for configured version-update
 jobs. Check **Security and quality > Dependabot alerts** for scan results; an
 empty alert list alone does not prove that scanning is enabled. Record the
 repository, date, enabled settings, and verification evidence below. Review any
-proposed dependency updates against paired pins in requirements-dev.txt and
-.pre-commit-config.yaml before merging them.
+proposed dependency updates using the local
+[tooling and update policy](development.md#tooling-and-updates) before merging them.
 
 ## Secret scanning and push protection
 
