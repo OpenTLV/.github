@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Use four-space indentation for Python files in EditorConfig while preserving other formatting defaults. (#22)
+
 ### Added
 
 - Pinned, integrity-checked actionlint and zizmor checks in community CI, with local reproduction and workflow security guidance. (#12)
