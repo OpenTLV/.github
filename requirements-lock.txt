@@ -1,0 +1,4 @@
+# Lock generator only; no Python dependencies. Linux/Windows x86-64 wheels.
+uv==0.9.5 \
+    --hash=sha256:6507bbbcd788553ec4ad5a96fa19364dc0f58b023e31d79868773559a83ec181 \
+    --hash=sha256:48a12390421f91af8a8993cf15c38297c0bb121936046286e287975b2fbf1789

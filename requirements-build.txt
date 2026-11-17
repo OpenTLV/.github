@@ -1,0 +1,4 @@
+# REUSE 5.1.1 build backend, installed before the development lock.
+# No Python dependencies; only the reviewed universal wheel is accepted.
+poetry-core==2.2.1 \
+    --hash=sha256:bdfce710edc10bfcf9ab35041605c480829be4ab23f5bc01202cfe5db8f125ab

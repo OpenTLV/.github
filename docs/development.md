@@ -6,8 +6,9 @@ and changelogs. Other OpenTLV repositories define their own development setup.
 
 ## Setup and checks
 
-Requirements: Git and Python 3.10 or newer with pip and venv. The CI checks
-Python 3.10 and 3.12. Select the intended interpreter before creating the virtual
+Requirements: Git and CPython 3.10 or 3.12 with pip and venv; both are checked in
+CI. Supported platforms and dependency installation boundaries are documented
+in the [dependency integrity policy](dependencies.md). Select the intended interpreter before creating the virtual
 environment (for example, `py -3.10` on Windows or `python3.10` on POSIX).
 From a fresh checkout:
 
@@ -21,7 +22,8 @@ Activate with `.venv\Scripts\Activate.ps1` in PowerShell, or
 `. .venv/bin/activate` in a POSIX shell, then run:
 
 ```sh
-python -m pip install -r requirements-dev.txt
+python -m pip install --require-hashes --only-binary=:all: -r requirements-build.txt
+python -m pip install --require-hashes --no-build-isolation --only-binary=:all: --no-binary=reuse -r requirements-dev.txt
 pre-commit install
 pre-commit run --all-files
 ```
@@ -42,7 +44,9 @@ until all checks pass. Coverage differs by hook:
 | REUSE | Repository files, including non-ignored untracked files, subject to REUSE exclusions such as license texts, metadata sidecars, empty files, and symlinks; ignores the hook's filename list. |
 | Regression tests | Runs the test suite regardless of the selected filenames. |
 
-The three local hooks use `pass_filenames: false` and `always_run: true`.
+The three local hooks use `language: system`, `pass_filenames: false`, and
+`always_run: true`. They use the activated, hash-locked Python environment instead
+of installing dependencies in separate hook environments.
 Consequently, a pre-commit filename selection does not restrict their scope.
 Untracked files inside ignored directories such as `.cache/` and `.venv/` are
 excluded from repository scans.
@@ -81,16 +85,19 @@ The first run needs network access to GitHub, PyPI, the npm registry, and the
 Node.js download service.
 
 - Dependabot proposes monthly updates for SHA-pinned workflow actions.
-- Maintain Python tool versions, hook revisions, and the Node.js runtime manually.
-  Keep PyYAML and REUSE versions aligned between `requirements-dev.txt` and
-  `.pre-commit-config.yaml`.
+- Maintain direct Python pins in `requirements-dev.in` and regenerate
+  `requirements-dev.txt` using the [dependency integrity policy](dependencies.md).
+  Local Python hooks use that environment and have no separate dependency pins.
+- Maintain hook revisions and the Node.js runtime manually.
 - Review analyzer releases monthly and when relevant security fixes appear.
   Follow the [analyzer integrity and update policy](actions-checks.md#suppressions-and-updates)
   for paired versions, artifact URLs, and hashes.
 
-Direct Python tools and hook/runtime versions are pinned; transitive Python and
-npm dependencies are not a complete lockfile. The analyzer wheel requirements
-are separately pinned and hash-checked. Run the documented checks after updates.
+The full Python development graph is pinned and hash-checked, including
+transitive dependencies. The analyzer and lock-generator wheel requirements are
+separate hash-checked files. The [dependency integrity policy](dependencies.md)
+describes regeneration, supported environments, and the remaining bootstrap and
+Node/npm limitations. Run the documented checks after updates.
 
 Scheduled updates do not enable the dependency graph, Dependabot alerts, or
 security updates. Maintainers configure these settings separately; follow the
