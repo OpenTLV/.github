@@ -1,10 +1,12 @@
 """Validate repository text, local Markdown links, and GitHub issue forms."""
 
 from pathlib import Path
+import html
 import json
 import re
 import subprocess
 import sys
+import unicodedata
 from urllib.parse import unquote, urlsplit
 
 import yaml
@@ -12,6 +14,132 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_FILE_BYTES = 1024 * 1024
+REPOSITORY_FILES = "/OpenTLV/.github/blob/main/"
+
+
+def without_fences(text: str) -> str:
+    """Blank fenced code, retaining line boundaries for heading detection."""
+    lines = []
+    fence = None
+    for line in text.splitlines():
+        if fence:
+            if re.fullmatch(r" {0,3}" + re.escape(fence[0]) +
+                            "{" + str(fence[1]) + r",}\s*", line):
+                fence = None
+            lines.append("")
+        else:
+            match = re.match(r" {0,3}(`{3,}|~{3,})(.*)$", line)
+            if match and not (match[1][0] == "`" and "`" in match[2]):
+                fence = (match[1][0], len(match[1]))
+                lines.append("")
+            else:
+                lines.append(line)
+    return "\n".join(lines)
+
+
+def heading_anchors(text: str) -> set[str]:
+    """Anchors for ordinary ATX/single-line setext headings, including duplicates."""
+    anchors = set()
+    lines = without_fences(text).splitlines()
+    for index, line in enumerate(lines):
+        match = re.match(r" {0,3}#{1,6}(?:[ \t]+(.*)|$)", line)
+        if match:
+            title = re.sub(r"[ \t]+#+[ \t]*$", "", match[1] or "")
+        elif (index and lines[index - 1].strip() and
+              re.fullmatch(r" {0,3}(?:=+|-+)[ \t]*", line) and
+              not re.match(r"\s*(?:#|>|[-+*] |\d+[.)] )", lines[index - 1])):
+            title = lines[index - 1].strip()
+        else:
+            continue
+        # Preserve visible inline text, not link destinations or HTML tags.
+        title = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", title)
+        title = html.unescape(re.sub(r"<[^>]*>", "", title))
+        title = re.sub(r"(?<!\w)_{1,2}(.+?)_{1,2}(?!\w)", r"\1", title)
+        title = re.sub(r"[*`~\\]", "", title).lower()
+        slug = "".join(
+            "-" if char == " " else char
+            for char in title
+            if char in " -_" or unicodedata.category(char)[0] in "LNM"
+        )
+        candidate = slug
+        number = 0
+        while candidate in anchors:
+            number += 1
+            candidate = f"{slug}-{number}"
+        anchors.add(candidate)
+    return anchors
+
+
+def markdown_links(text: str) -> list[str]:
+    """Extract ordinary inline links and autolinks, excluding fenced/inline code."""
+    text = without_fences(text)
+    text = re.sub(r"(`+).*?\1", "", text, flags=re.DOTALL)
+    inline = r"\[[^\]\n]*\]\(\s*(?:<([^>\n]+)>|([^\s)]+))(?:[^\n)]*)\)"
+    links = re.findall(inline, text)
+    targets = [angle or plain for angle, plain in links]
+    text = re.sub(inline, "", text)
+    targets.extend(re.findall(r"<((?:https?://|#)[^<>\s]+)>", text))
+    text = re.sub(r"<[^>\n]*>", "", text)
+    # GitHub also autolinks bare same-repository file URLs.
+    targets.extend(target.rstrip(".,;!?") for target in re.findall(
+        r"https?://github\.com/OpenTLV/\.github/blob/main/[^\s<>\])]+", text,
+    ))
+    return sorted(set(targets))
+
+
+def check_links(root: Path, path: Path, text: str) -> list[str]:
+    errors = []
+    for target in markdown_links(text):
+        try:
+            link = urlsplit(target)
+            repository_file = False
+            if link.scheme or link.netloc:
+                if (link.scheme not in {"http", "https"} or
+                        link.netloc.lower() != "github.com" or
+                        not link.path.startswith(REPOSITORY_FILES)):
+                    continue
+                base = root
+                raw_path = link.path[len(REPOSITORY_FILES):]
+                repository_file = True
+            else:
+                base = root if link.path.startswith("/") else path.parent
+                raw_path = link.path.lstrip("/")
+            decoded = unquote(raw_path)
+            # Reject Windows separators, drive/ADS syntax, and NUL on every OS.
+            if any(char in decoded for char in ("\\", ":", "\0")):
+                raise ValueError("invalid local path")
+            destination = (base / decoded).resolve() if (decoded or repository_file) else path.resolve()
+            destination.relative_to(root.resolve())
+        except (ValueError, OSError, RuntimeError):
+            errors.append(f"unsafe local link target {target}")
+            continue
+        if not destination.exists() or (repository_file and not destination.is_file()):
+            errors.append(f"missing local link target {target}")
+            continue
+        if link.fragment and destination.is_file() and destination.suffix.lower() == ".md":
+            if destination.stat().st_size > MAX_FILE_BYTES:
+                errors.append(f"link target exceeds the 1 MiB repository limit {target}")
+                continue
+            try:
+                anchors = heading_anchors(destination.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError):
+                errors.append(f"unreadable Markdown link target {target}")
+                continue
+            if unquote(link.fragment) not in anchors:
+                errors.append(f"missing local heading anchor {target}")
+    return errors
+
+
+def has_conflict_markers(text: str, markdown: bool) -> bool:
+    if re.search(r"^(?:<{7,}|>{7,}|\|{7,})(?:[ \t]|$)", text, re.MULTILINE):
+        return True
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if re.fullmatch(r"={7,}[ \t]*", line):
+            # In Markdown this can be a legitimate setext heading underline.
+            if not markdown or not index or not lines[index - 1].strip():
+                return True
+    return False
 
 
 def check(root: Path = ROOT) -> list[str]:
@@ -40,15 +168,10 @@ def check(root: Path = ROOT) -> list[str]:
             errors.append(f"{name}: missing final newline")
         if any(line.rstrip() != line for line in text.splitlines()):
             errors.append(f"{name}: trailing whitespace")
-        if re.search(r"^(?:<{7}|={7}|>{7})(?: |$)", text, re.MULTILINE):
+        if has_conflict_markers(text, path.suffix == ".md"):
             errors.append(f"{name}: possible merge conflict marker")
         if path.suffix == ".md":
-            for target in re.findall(r"\[[^\]]*\]\(([^\s)]+)\)", text):
-                link = urlsplit(target)
-                if link.scheme or link.netloc or not link.path:
-                    continue
-                if not (path.parent / unquote(link.path)).exists():
-                    errors.append(f"{name}: missing local link target {target}")
+            errors.extend(f"{name}: {error}" for error in check_links(root, path, text))
         if path.suffix == ".json":
             try:
                 json.loads(text, parse_constant=reject_json_constant)

@@ -64,6 +64,44 @@ tables and URLs, and a top-level heading is not required because the PR template
 starts at heading level two. Regression tests exercise valid and invalid files.
 Local validation does not establish GitHub form rendering or submission behavior.
 
+### Local link and conflict-marker checks
+
+The community checker validates ordinary inline Markdown links and images,
+angle-bracket autolinks, and bare file URLs of the form
+`https://github.com/OpenTLV/.github/blob/main/<path>`. Those repository URLs map
+to files in the current checkout, including uncommitted changes; directory
+targets are invalid for `blob` URLs. Other hosts, repositories, and Git refs are
+not fetched or checked. CI makes no external-network link requests.
+
+Relative paths resolve from the containing document; paths beginning with `/`
+resolve from the repository root. Percent-encoded paths and fragments are
+decoded. Paths escaping the checkout, including resolved symlinks, Windows
+drive/stream syntax, backslashes, and NUL bytes, are rejected.
+
+For Markdown targets, fragments must match supported heading anchors. This
+includes same-document fragments, ordinary ATX headings, and single-line setext
+headings. Normalization lowercases text, removes punctuation and formatting,
+preserves Unicode letters/numbers and underscores, replaces spaces with hyphens,
+and adds numeric suffixes for duplicate headings, including suffix collisions.
+Inline code text, simple link labels, and HTML entities in headings are supported.
+See GitHub's [section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#section-links).
+
+This is a limited Markdown checker, not a complete GitHub renderer. Reference-style
+links, raw HTML links/custom anchors, multiline or complex nested headings, and
+line-range fragments are not supported. Use ordinary heading links for checked
+fragments; non-Markdown target fragments are not validated. Use percent encoding
+or angle-wrapped inline destinations for paths containing spaces or parentheses.
+Links and headings inside backtick or tilde fences (up to three leading spaces)
+are ignored; inline code examples are also excluded from link extraction.
+Nested list/blockquote fences and indented code blocks are outside this subset.
+
+Conflict scanning still examines all file text, including code examples. Opening,
+closing, and diff3-base markers are rejected. A standalone separator is rejected
+in non-Markdown files and when it has no preceding nonblank line in Markdown.
+An equals underline following Markdown text is accepted as a setext heading;
+an isolated conflict separator in that position is inherently ambiguous. Full
+conflicts remain detectable through their opening/closing markers.
+
 Keep Markdown readable as plain text, use descriptive link text and relative
 links within this repository, and use absolute GitHub links in inherited files
 when referring to central policies. Verify claims and public project links
