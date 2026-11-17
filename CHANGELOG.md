@@ -37,4 +37,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Separate inherited contribution rules from community-repository development instructions and remove obsolete bootstrap guidance. (#20)
 - Changelog uses standard change categories; verification evidence and outstanding checks remain in the adoption guide. (#3)

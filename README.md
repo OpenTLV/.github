@@ -3,7 +3,8 @@
 Organization profile, community policies, and shared GitHub templates for OpenTLV.
 
 - [Organization profile](profile/README.md)
-- [Contributing and local checks](CONTRIBUTING.md)
+- [Contributing](CONTRIBUTING.md)
+- [Local development and checks](docs/development.md)
 - [Code of conduct](CODE_OF_CONDUCT.md)
 - [Security reporting](SECURITY.md)
 - [Support](SUPPORT.md)
