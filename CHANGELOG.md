@@ -7,6 +7,8 @@ Notable changes are recorded here using
 
 ### Added
 
+- Private credential-exposure triage and secret-scanning alert resolution guidance. (#13)
+- Native push-protection setup, safe verification, coverage limits, and local detector evaluation. (#13)
 - Shared Task and Epic issue forms with native sub-issue tracking guidance. (#11)
 - Optional Validation field in the Chore form. (#11)
 - GitHub Free governance baseline and procedures for repository audits and approved settings changes. (#10)
