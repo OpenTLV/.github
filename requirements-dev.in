@@ -1,0 +1,5 @@
+# Direct development dependencies; regenerate requirements-dev.txt after edits.
+-r requirements-build.txt
+pre-commit==4.3.0
+reuse==5.1.1
+PyYAML==6.0.3
