@@ -6,6 +6,7 @@ body:
       value: |
         Use this form for maintenance work in the repository where you open the issue.
         Use Bug report for defects and Feature request for new capabilities.
+        Use Task for defined implementation work and Epic for coordinated work across child issues.
         For vulnerabilities, follow https://github.com/OpenTLV/.github/blob/main/SECURITY.md.
         Remove secrets and personal information before submitting.
   - type: textarea
@@ -34,3 +35,8 @@ body:
     attributes:
       label: Dependencies and risks
       description: Note related issues, cross-repository coordination, or compatibility concerns.
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Optionally describe checks or other evidence that will verify the maintenance work.
