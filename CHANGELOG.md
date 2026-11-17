@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Add the shared security-reporting and sensitive-data notice to the feature request form. (#24)
 - Use four-space indentation for Python files in EditorConfig while preserving other formatting defaults. (#22)
 
 ### Added
