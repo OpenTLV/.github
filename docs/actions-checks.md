@@ -2,7 +2,8 @@
 
 The repository-local `Community quality` workflow runs pre-commit (community
 validation, its regression tests, Markdown lint, and REUSE) and `pip check` on
-Python 3.10 and 3.12. On Python 3.12 it also verifies
+the [configured Python version](../.python-version) on Ubuntu 24.04 x86-64.
+It also verifies
 [lockfile reproducibility](dependencies.md#reproducing-and-updating-the-lock)
 and runs actionlint 1.7.12 and zizmor 1.32.0.
 Every pull request, push to `main`, and manual dispatch runs the same workflow,
@@ -20,16 +21,7 @@ zizmor --offline --strict-collection --collect=workflows .
 
 For Linux x86-64, run the download, checksum verification, extraction, and
 actionlint commands verbatim from `.github/workflows/quality.yml`.
-For Windows x86-64, use PowerShell:
-
-```powershell
-New-Item -ItemType Directory -Force .cache/actionlint | Out-Null
-Invoke-WebRequest https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_windows_amd64.zip -OutFile .cache/actionlint/actionlint.zip
-if ((Get-FileHash .cache/actionlint/actionlint.zip -Algorithm SHA256).Hash -ne '6e7241b51e6817ea6a047693d8e6fed13b31819c9a0dd6c5a726e1592d22f6e9') { throw 'actionlint checksum mismatch' }
-Expand-Archive .cache/actionlint/actionlint.zip -DestinationPath .cache/actionlint -Force
-.cache/actionlint/actionlint.exe -shellcheck= -pyflakes=
-if ($LASTEXITCODE -ne 0) { throw 'actionlint failed' }
-```
+On Windows, run the same commands in Ubuntu 24.04 under WSL 2.
 
 actionlint discovers all `.yml` and `.yaml` workflows in `.github/workflows`.
 Its optional ShellCheck and Pyflakes integrations are explicitly disabled so
@@ -39,8 +31,7 @@ checks remain enabled. zizmor collects all workflows and fails on parsing
 errors as well as findings at its default thresholds. No `--exit-codes` override,
 severity filter, or `continue-on-error` weakens the checks.
 
-The supplied hashes cover Ubuntu/Linux x86-64 and Windows x86-64 only. On other
-platforms, review and add the appropriate upstream artifact hash before use.
+The supplied hashes cover Linux x86-64.
 
 ## Security review and limits
 
@@ -53,12 +44,11 @@ The workflow audit for issue #12 found one workflow, `quality.yml`, with:
   `pull_request_target` or privileged `workflow_run` execution of PR code.
 - No secrets, personal access tokens, environments, or tokens passed to scripts.
 - No untrusted PR titles, bodies, branch names, or other event values expanded
-  into shell commands. The Python matrix contains fixed, repository-owned values.
+  into shell commands.
 - GitHub-hosted ephemeral runners, no shared workflow cache or artifact handoff,
   and a ten-minute job timeout.
 
-The hardening change also names the matrix job explicitly and adds concurrency
-grouping by workflow, event, and ref. New PR runs cancel older runs for the same
+Concurrency is grouped by workflow, event, and ref. New PR runs cancel older runs for the same
 PR; pushes and manual runs are not canceled by that policy.
 
 PRs execute contributor-controlled checks in an unprivileged job. Keep that
@@ -78,7 +68,7 @@ Do not add blanket ignores or disable checks to make CI green.
 
 See [tooling and updates](development.md#tooling-and-updates) for update ownership,
 review cadence, and other tool pins. For actionlint, update the version, archive
-URL, and hard-coded SHA-256 in CI together with the Windows commands above.
+URL, and hard-coded SHA-256 in CI together.
 Compare hashes with the
 [upstream actionlint release](https://github.com/rhysd/actionlint/releases);
 verify release attestations when available. Never fetch a mutable installer or

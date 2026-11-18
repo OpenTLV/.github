@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Standardize community development and CI on CPython 3.14 and Ubuntu 24.04 x86-64, with WSL 2 for Windows contributors. (#45)
 - Clarify that new changelog categories go at the top of their version section. (#43)
 - Publish the maintainer-designated private email for security fallback and project conduct reports, replacing the GitHub-only contact limitation. (#28)
 - Document GitHub-only private security routes, the responsible maintainer, conduct-reporting options, and remaining contact and verification limits. (#28)

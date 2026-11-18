@@ -6,22 +6,22 @@ and changelogs. Other OpenTLV repositories define their own development setup.
 
 ## Setup and checks
 
-Requirements: Git and CPython 3.10 or 3.12 with pip and venv; both are checked in
-CI. Supported platforms and dependency installation boundaries are documented
-in the [dependency integrity policy](dependencies.md). Select the intended interpreter before creating the virtual
-environment (for example, `py -3.10` on Windows or `python3.10` on POSIX).
+Use Git and the CPython version in [`.python-version`](../.python-version) with
+pip and venv on Ubuntu 24.04 x86-64. CI uses the same version and platform. On
+Windows, use Ubuntu 24.04 in WSL 2 and run the commands in its Linux shell.
+See the [dependency integrity policy](dependencies.md).
 From a fresh checkout:
 
 ```sh
 git clone https://github.com/OpenTLV/.github.git
 cd .github
-python -m venv .venv
+"python$(cat .python-version)" -m venv .venv
 ```
 
-Activate with `.venv\Scripts\Activate.ps1` in PowerShell, or
-`. .venv/bin/activate` in a POSIX shell, then run:
+Activate the environment and install the locked development dependencies:
 
 ```sh
+. .venv/bin/activate
 python -m pip install --require-hashes --only-binary=:all: -r requirements-build.txt
 python -m pip install --require-hashes --no-build-isolation --only-binary=:all: --no-binary=reuse -r requirements-dev.txt
 pre-commit install
@@ -53,7 +53,7 @@ excluded from repository scans.
 
 Changes to workflows must also pass actionlint and zizmor; see
 [GitHub Actions checks](actions-checks.md) for local commands. CI runs the same
-pre-commit checks and runs the workflow analyzers once on Python 3.12.
+pre-commit checks and workflow analyzers in its `quality` job.
 
 The community checker validates UTF-8, LF endings, trailing whitespace, final
 newlines, conflict markers, local Markdown link targets, YAML/JSON syntax, and

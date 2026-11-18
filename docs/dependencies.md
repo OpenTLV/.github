@@ -26,21 +26,20 @@ commits from an editor; dependencies are no longer installed automatically for
 these hooks. Missing tools fail the checks.
 
 The development graph includes pre-commit's environment helpers, REUSE's license
-parsing and templating dependencies, PyYAML, and Python-version-specific branches.
+parsing and templating dependencies, and PyYAML.
 `requirements-dev.in` holds direct pins; `requirements-dev.txt` is the generated
 full graph. Existing zizmor wheel hashes and actionlint archive verification
 remain separate and unchanged; see [GitHub Actions checks](actions-checks.md).
 
 ## Supported environments
 
-The validation matrix is CPython 3.10 and 3.12 on Ubuntu 24.04 x86-64 in CI.
-Windows x86-64 with those Python versions is supported for local development.
-The universal lock includes environment markers so each interpreter selects its
-compatible dependency versions. Generation uses Python 3.10 as the lower bound;
-this does not claim validation of every newer interpreter or platform.
+CI and local development use the CPython version in
+[`.python-version`](../.python-version) on Ubuntu 24.04 x86-64. Windows users
+run that environment in WSL 2. The lock resolves for that Python version and
+the `x86_64-manylinux_2_39` target, matching Ubuntu 24.04's glibc baseline.
 
 The build backend uses a universal Python wheel. The lock generator's approved
-wheel hashes cover Linux and Windows x86-64.
+wheel hash covers Linux x86-64.
 Other platforms require review of wheel availability and approved hashes before
 being added to the supported set. Use a fresh virtual environment for validation
 so preinstalled packages cannot hide missing requirements. pip does not remove
@@ -49,33 +48,32 @@ packages without rechecking their installed bytes.
 
 ## Reproducing and updating the lock
 
-Use the uv version pinned in `requirements-lock.txt`. Its universal pip compiler
-produces a pip-compatible requirements file with
-the full graph, markers, and hashes from package-index metadata. This avoids
-maintaining separate Linux and Windows locks. Maintainers and the CI
+Use the uv version pinned in `requirements-lock.txt`. Its pip compiler produces
+a pip-compatible requirements file with the full dependency graph and release
+artifact hashes from package-index metadata. Maintainers and the CI
 reproducibility check use uv to generate the lock. Contributors and CI install
 the development dependencies with pip.
 
 Create a separate virtual environment and activate it:
 
 ```sh
-python -m venv .cache/lock-generator
+"python$(cat .python-version)" -m venv .cache/lock-generator
 ```
 
-Use `. .cache/lock-generator/bin/activate` on POSIX or
-`.cache\lock-generator\Scripts\Activate.ps1` in PowerShell. Then run:
+Activate the generator environment and compile the lock:
 
 ```sh
+. .cache/lock-generator/bin/activate
 python -m pip install --require-hashes --only-binary=:all: -r requirements-lock.txt
-uv --no-config pip compile --universal --python-version 3.10 --generate-hashes --only-binary=:all: --no-binary=reuse --output-file requirements-dev.txt requirements-dev.in
+uv --no-config pip compile --python-version "$(cat .python-version)" --python-platform x86_64-manylinux_2_39 --generate-hashes --only-binary=:all: --no-binary=reuse --output-file requirements-dev.txt requirements-dev.in
 ```
 
 Run the compiler without package-index environment overrides so it uses the
 default PyPI index.
 
-CI runs the same generation command once on Python 3.12 and fails if
+CI runs the same generation command and fails if
 `git diff --exit-code -- requirements-dev.txt` detects changes to the committed
-lock. Both Python matrix jobs run `python -m pip check` after installation.
+lock. The quality job runs `python -m pip check` after installation.
 
 Regeneration retains existing pins where possible. For deliberate updates, edit
 direct pins in `requirements-dev.in`, then add `--upgrade` to the compiler
@@ -90,7 +88,7 @@ When updating uv itself, update its exact version and approved wheel hashes in
 `requirements-lock.txt` together and review the release. The generator has no
 Python dependencies.
 
-Validate each supported interpreter in a fresh environment with:
+Validate in a fresh environment using the version in `.python-version`:
 
 ```sh
 python -m pip install --require-hashes --only-binary=:all: -r requirements-build.txt
@@ -101,14 +99,12 @@ pre-commit run --all-files
 
 Also run the workflow analyzers when changing the workflow. Regenerate a second
 time with the same generator and inputs and confirm the lock has no diff.
-Keep the existing Python CI matrix, required check names, action SHAs, and
-analyzer integrity checks intact. Review updates monthly and when relevant
+Review updates monthly and when relevant
 security fixes appear, as part of [tooling maintenance](development.md#tooling-and-updates).
 
 ## Remaining installation boundaries
 
-- The Python interpreter, bundled pip/venv bootstrap (including seeded
-  setuptools on Python 3.10), GitHub-hosted runner tools,
+- The Python interpreter, bundled pip/venv bootstrap, GitHub-hosted runner tools,
   and setup-python downloads are outside the Python requirements lock. We do not
   add an unverified pip upgrade. CI retains SHA-pinned official setup/checkout
   actions, read-only permissions, and disabled checkout credential persistence.
