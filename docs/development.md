@@ -168,7 +168,10 @@ isolated Node.js 24.11.1 runtime; a global Node.js installation is not required.
 The first run needs network access to GitHub, PyPI, the npm registry, and the
 Node.js download service.
 
-- Dependabot proposes monthly updates for SHA-pinned workflow actions.
+- Dependabot checks SHA-pinned workflow actions monthly. Routine version updates
+  are eligible once a release is at least seven days old, and are picked up at
+  an update check. Dependabot security updates are exempt from the cooldown.
+  See [Dependabot cooldown options](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#cooldown).
 - Maintain direct Python pins in `requirements-dev.in` and regenerate
   `requirements-dev.txt` using the [dependency integrity policy](dependencies.md).
   Local Python hooks use that environment and have no separate dependency pins.

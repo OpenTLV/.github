@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Require a seven-day cooldown for routine Dependabot updates to GitHub Actions. (#48)
 - Run actionlint and zizmor in the dedicated `workflow-analyzers` job in parallel with Python quality checks. (#46)
 - Standardize community development and CI on CPython 3.14 and Ubuntu 24.04 x86-64, with WSL 2 for Windows contributors. (#45)
 - Clarify that new changelog categories go at the top of their version section. (#43)
