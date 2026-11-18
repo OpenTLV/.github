@@ -52,8 +52,9 @@ packages without rechecking their installed bytes.
 Use the uv version pinned in `requirements-lock.txt`. Its universal pip compiler
 produces a pip-compatible requirements file with
 the full graph, markers, and hashes from package-index metadata. This avoids
-maintaining separate Linux and Windows locks. uv is a maintainer-only generator;
-ordinary contributors and CI install the resulting lock with pip.
+maintaining separate Linux and Windows locks. Maintainers and the CI
+reproducibility check use uv to generate the lock. Contributors and CI install
+the development dependencies with pip.
 
 Create a separate virtual environment and activate it:
 
@@ -71,6 +72,10 @@ uv --no-config pip compile --universal --python-version 3.10 --generate-hashes -
 
 Run the compiler without package-index environment overrides so it uses the
 default PyPI index.
+
+CI runs the same generation command once on Python 3.12 and fails if
+`git diff --exit-code -- requirements-dev.txt` detects changes to the committed
+lock. Both Python matrix jobs run `python -m pip check` after installation.
 
 Regeneration retains existing pins where possible. For deliberate updates, edit
 direct pins in `requirements-dev.in`, then add `--upgrade` to the compiler

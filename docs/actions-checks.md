@@ -1,8 +1,10 @@
 # GitHub Actions checks
 
 The repository-local `Community quality` workflow runs pre-commit (community
-validation, its regression tests, Markdown lint, and REUSE) on Python 3.10 and
-3.12. It also runs actionlint 1.7.12 and zizmor 1.32.0 once, on Python 3.12.
+validation, its regression tests, Markdown lint, and REUSE) and `pip check` on
+Python 3.10 and 3.12. On Python 3.12 it also verifies
+[lockfile reproducibility](dependencies.md#reproducing-and-updating-the-lock)
+and runs actionlint 1.7.12 and zizmor 1.32.0.
 Every pull request, push to `main`, and manual dispatch runs the same workflow,
 without path filters or separate orchestration. Analyzer failures fail the job.
 
