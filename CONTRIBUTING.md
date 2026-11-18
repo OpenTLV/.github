@@ -163,6 +163,14 @@ and [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
   for policy updates.
 - Use the `v` prefix in Git release tags, for example `v1.0.0`, but omit it
   from changelog version headings: `## [1.0.0] - YYYY-MM-DD`.
+- Use the full SemVer pre-release version in the changelog heading, for example
+  `## [0.1.0-rc.1] - YYYY-MM-DD` for tag `v0.1.0-rc.1`.
+- Preserve published pre-release sections. When promoting a pre-release to a
+  stable release without code changes, add a new dated stable section above the
+  pre-release section and link to it instead of repeating its entries. For
+  example, write "Promoted [0.1.0-rc.1] to a stable release without code changes."
+  The repository's Full CI must pass for the exact commit on `main` containing
+  the stable section before the release workflow creates the stable tag.
 - Link version headings to tags or comparisons where applicable. After a
   release, update the Unreleased comparison to start at the latest release tag.
 
