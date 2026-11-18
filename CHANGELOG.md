@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Catch broken reference-style and HTML links, validate explicit HTML anchors, and keep Markdown validation running after unmatched backticks and invalid UTF-8 Git paths. (#40)
 - Validate dropdown and checkbox option structure and document the text-only asset policy, with explicit rejection of unexpected binary content. (#27)
 - Validate same-repository file links and local heading anchors, skip fenced link examples, and distinguish setext headings from merge-conflict markers. (#25)
 - Add the shared security-reporting and sensitive-data notice to the feature request form. (#24)

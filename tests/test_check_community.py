@@ -152,7 +152,73 @@ class CommunityValidationTests(unittest.TestCase):
         ).encode())
         errors = check(self.root)
         self.assertEqual(sum("missing local link target" in e for e in errors), 2, errors)
-        self.assertEqual(sum("missing local heading anchor" in e for e in errors), 2, errors)
+        self.assertEqual(sum("missing local Markdown anchor" in e for e in errors), 2, errors)
+
+    def test_reference_html_and_case_insensitive_repository_links(self):
+        self.write("docs/Guide.md", b"# Guide\n")
+        self.write("README.md", (
+            '[Missing][ref]\n\n[ref]: <missing reference.md> "Title"\n'
+            '<a HREF="missing&amp;html.md">HTML link</a>\n'
+            '[Wrong case](https://github.com/oPeNtLv/.GITHUB/blob/main/docs/guide.md)\n'
+            '<https://GITHUB.com/opentlv/.Github/blob/main/missing-angle.md>\n'
+            'See https://github.com/opentlv/.Github/blob/main/missing-bare.md.\n'
+            '[Valid][ok]\n\n[ok]: docs/Guide.md#guide\n'
+            '[Valid](https://github.com/opentlv/.GITHUB/blob/main/docs/Guide.md)\n'
+        ).encode())
+        self.assertEqual(check(self.root), [
+            f"README.md: missing local link target {target}"
+            for target in sorted((
+                "missing reference.md", "missing&html.md",
+                "https://github.com/oPeNtLv/.GITHUB/blob/main/docs/guide.md",
+                "https://GITHUB.com/opentlv/.Github/blob/main/missing-angle.md",
+                "https://github.com/opentlv/.Github/blob/main/missing-bare.md",
+            ))
+        ])
+
+    def test_unmatched_backticks_leave_links_visible(self):
+        self.write("README.md", (
+            '`unmatched [Visible](absent.md)\n'
+            '`` multi-line ``` [Hidden](example.md)\n'
+            '<a href="example.html">Example</a> ``\n\n'
+            '```markdown\n[hidden]: example-reference.md\n```\n\n'
+            '`[Hidden](another-example.md)`\n'
+        ).encode())
+        self.assertEqual(check(self.root), ["README.md: missing local link target absent.md"])
+
+    def test_uppercase_suffixes_and_explicit_anchors(self):
+        self.write("Guide.MD", (
+            '<a ID="KeepCase"></a>\n<span id=plain></span>\n'
+            '`<a id="example"></a>`\n\n'
+            '```html\n<a id="fenced"></a>\n```\n\n'
+            '[Valid](#KeepCase) [Also valid](#plain)\n'
+            '[Wrong case](#keepcase) [Missing](#example) [Fenced](#fenced)\n'
+            '[Broken](absent.md)\n'
+        ).encode())
+        self.write("broken.YML", b"items: [\n")
+        errors = check(self.root)
+        self.assertEqual(errors[:4], [
+            "Guide.MD: missing local Markdown anchor #example",
+            "Guide.MD: missing local Markdown anchor #fenced",
+            "Guide.MD: missing local Markdown anchor #keepcase",
+            "Guide.MD: missing local link target absent.md",
+        ])
+        self.assertEqual(len(errors), 5)
+        self.assertTrue(errors[4].startswith("broken.YML: invalid YAML"), errors)
+
+    def test_non_utf8_git_path_does_not_interrupt_validation(self):
+        self.write("broken.YAML", b"items: [\n")
+        blob = subprocess.run(
+            ["git", "hash-object", "-w", "--stdin"], input=b"text\n",
+            cwd=self.root, check=True, capture_output=True,
+        ).stdout.strip()
+        subprocess.run(
+            ["git", "update-index", "-z", "--index-info"],
+            input=b"100644 " + blob + b"\tbad\xff.md\0",
+            cwd=self.root, check=True, capture_output=True,
+        )
+        errors = check(self.root)
+        self.assertEqual(errors[0], r"bad\xff.md: expected a UTF-8 path")
+        self.assertTrue(errors[1].startswith("broken.YAML: invalid YAML"), errors)
 
     def test_fenced_and_inline_code_are_not_links_or_headings(self):
         self.write("README.md", (
@@ -166,7 +232,7 @@ class CommunityValidationTests(unittest.TestCase):
         self.assertEqual(check(self.root), [])
         with (self.root / "README.md").open("ab") as stream:
             stream.write(b"[Not a heading](#hidden)\n")
-        self.assertTrue(any("missing local heading anchor" in e for e in check(self.root)))
+        self.assertTrue(any("missing local Markdown anchor" in e for e in check(self.root)))
 
     def test_heading_normalization_and_duplicate_collisions(self):
         self.write("README.md", (
