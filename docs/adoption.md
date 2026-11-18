@@ -242,16 +242,10 @@ Record date, repository, default-branch commit, observer, screenshots or URLs,
 and results in the table below. If GitHub caches an old state, retry after it
 refreshes and record the observed behavior. Restore test fixtures afterward.
 
-Changes to forms and policies require deployment verification against the
-changed default-branch commit. The baseline results below do not establish
-rendering or submission behavior for the Chore form added in issue #2.
-
-For issue #11, verify Task and Epic rendering and required-field validation in
-an eligible consuming repository after deployment. Check that Chore can be
-submitted with Validation empty, while its original required fields remain
-required. Confirm security/support routing is still present. Record the tested
-commit and observed behavior; previous form checks do not establish the behavior
-of these new or changed forms.
+Verify changed forms and policies against the default-branch commit that
+introduced them. Record separately what was visible in the chooser or form,
+what validation blocked before submission, and what GitHub applied to a
+submitted issue.
 
 ## Verification record
 
@@ -271,26 +265,22 @@ default branch. The profile did not claim implementation or release capabilities
 | Public documentation links | All 17 unique HTTPS links in repository Markdown returned HTTP 200; profile claims were checked against the public repositories |
 | Inherited conduct, contribution, and security policies | [opentlv Community Standards](https://github.com/OpenTLV/opentlv/community) showed the inherited policies; the [security policy](https://github.com/OpenTLV/opentlv/security/policy) displayed the shared policy while the consuming repository's tree contained only LICENSE |
 
-### Checks requiring authenticated verification
+### Follow-up evidence and remaining checks
 
-The following checks had no completed verification recorded in the baseline.
-They remain pending in this record until new dated evidence is added. A public
-page or an unavailable inspection does not establish an authenticated setting.
+The follow-up records below capture maintainer observations, screenshots, and
+API results collected after the initial baseline.
 
-| Check | Recorded status and remaining work |
-| --- | --- |
-| Inherited support links and PR template | Pending signed-in UI verification using the deployment acceptance procedure |
-| Issue forms, required fields, and local template/config overrides | Pending signed-in UI verification; signed-out access to the consuming repository's issue chooser redirected to login |
-| Private vulnerability reporting setting and non-maintainer visibility | The API confirmed `enabled: true` for both repositories on 2026-11-17. Reporter-side access remains pending. |
-| Dependency graph | A maintainer-provided screenshot showed it disabled on 2026-11-16; enabling and verifying the repository setting remains pending in this record |
-| Dependabot alerts and security updates | Pending authenticated setup and verification; the committed version-update configuration does not establish these settings |
-
-The baseline verification did not create test issues, test repositories, or
-override fixtures, and did not change reporting settings. Complete the pending
-checks with the appropriate authorized accounts using the procedure above, then
-record the date, tested commit, repository, and observed result. Do not mark
-deployment acceptance complete until evidence for the required checks is
-recorded and repository-local quality checks pass.
+| Check | Repository and evidence | Recorded result and remaining work |
+| --- | --- | --- |
+| Inherited issue chooser | `OpenTLV/opentlv`, signed-in maintainer screenshots recorded on 2026-11-17 in [#2](https://github.com/OpenTLV/.github/issues/2) and [#11](https://github.com/OpenTLV/.github/issues/11) | The five inherited forms, security guidance, Community support links, and the maintainer-only blank issue option were observed. A separate non-maintainer chooser check remains untested. |
+| Form validation | `OpenTLV/opentlv`, signed-in maintainer checks recorded on 2026-11-17 in [#2](https://github.com/OpenTLV/.github/issues/2) and [#11](https://github.com/OpenTLV/.github/issues/11) | Missing required fields blocked Bug report and Chore. The maintainer confirmed required-field validation for Task and Epic and that Chore's Validation field is optional. Successful submissions for every form remain untested. |
+| Default labels and types | `OpenTLV/opentlv`, signed-in maintainer check recorded on 2026-11-18 in [#42](https://github.com/OpenTLV/.github/issues/42) | The expected labels and types were preselected in the inherited forms. Assignment after submission remains untested. |
+| Support-link navigation, PR template, and local overrides | `OpenTLV/opentlv`, maintainer acceptance recorded on 2026-11-17 in [#2](https://github.com/OpenTLV/.github/issues/2) | The maintainer accepted support-link navigation, PR template inheritance, local form and configuration overrides, and restoration of inheritance. Separate navigation, PR-template, and override fixture tests remain unrecorded. |
+| Dependency graph | `OpenTLV/.github` and `OpenTLV/opentlv`, maintainer settings screenshots recorded by 2026-11-17 in [#10](https://github.com/OpenTLV/.github/issues/10) | On in both repositories. This supersedes the earlier disabled observation. |
+| Dependabot alerts | Both repositories, maintainer settings screenshots recorded by 2026-11-17 in [#10](https://github.com/OpenTLV/.github/issues/10) | On in both repositories. |
+| Dependabot security updates | Both repositories, maintainer settings screenshots recorded by 2026-11-17 in [#10](https://github.com/OpenTLV/.github/issues/10) | On in both repositories. |
+| Private vulnerability reporting | `OpenTLV/.github` and `OpenTLV/opentlv`, repository API on 2026-11-17 and 2026-11-18 | `enabled: true` in both repositories. Opening the reporting flow as a signed-in non-maintainer remains untested. The reporting routes are tracked in [#28](https://github.com/OpenTLV/.github/issues/28). |
+| Conduct reporting to repository admins | `OpenTLV/.github` and `OpenTLV/opentlv`, signed-in non-maintainer UI check pending in [#28](https://github.com/OpenTLV/.github/issues/28) | Availability of **Report to repository admins** and the recipient remain unverified. |
 
 Keep sanitized verification artifacts outside Git in the ignored
 `.cache/deployment-verification/` directory. Record public evidence URLs and
