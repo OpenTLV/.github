@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Give each push to `main`, scheduled run, and manual run its own concurrency group so newer runs cannot displace pending audits. (#65)
+- Document how to verify effective branch rules and ruleset bypass actors, and how to handle advisories for SHA-pinned Actions. (#65)
+- Clarify that Epic authors can propose child issues and contributors with Triage access or higher can link them. (#65)
+- Direct usage questions from the shared issue chooser and support policy to OpenTLV Discussions Q&A. (#65)
+- Check policy links in the issue chooser and issue forms, accept upload fields, and reject symbolic links during repository validation. (#65)
 - Reconcile the adoption verification record and document the effective required checks for `main`. (#61)
 - Align governance and adoption guidance with the active ruleset and verified private reporting settings. (#59)
 - Limit blocking lockfile reproducibility checks to dependency-related PRs and report weekly hash drift as a warning. (#59)
@@ -53,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update the Markdown lint hook to Node.js 24.22.3 LTS. (#65)
 - Require both `quality` and `workflow-analyzers` before merging to `main`. (#63)
 - Require a seven-day cooldown for routine Dependabot updates to GitHub Actions. (#48)
 - Run actionlint and zizmor in the dedicated `workflow-analyzers` job in parallel with Python quality checks. (#46)

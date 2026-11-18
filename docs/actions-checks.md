@@ -64,8 +64,10 @@ The `quality.yml` workflow uses these controls:
 - GitHub-hosted ephemeral runners, no shared workflow cache or artifact handoff,
   and a ten-minute job timeout.
 
-Concurrency is grouped by workflow, event, and ref. New PR runs cancel older runs for the same
-PR. Other events keep their runs under that policy.
+New runs for the same pull request share a concurrency group and cancel older
+runs. Each push to `main`, scheduled run, and manual dispatch uses its own
+`github.run_id`. Successive merges can therefore run their online audits in
+parallel.
 
 PRs execute contributor-controlled checks in an unprivileged job. Keep that
 boundary when adding steps: never expose secrets or privileged tokens to PR code.

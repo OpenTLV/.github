@@ -6,8 +6,7 @@ body:
     attributes:
       value: |
         Use this form for larger coordinated work that will be split into child issues.
-        After creation, use GitHub's Create sub-issue or Add existing issue controls for tracking.
-        The child-issue plan below describes the breakdown; do not duplicate progress in a manual checklist.
+        After submission, someone with Triage access or higher can create or attach sub-issues to track progress.
         For vulnerabilities, follow https://github.com/OpenTLV/.github/blob/main/SECURITY.md.
         Remove secrets and personal information before submitting.
   - type: textarea
@@ -35,7 +34,7 @@ body:
     id: children
     attributes:
       label: Child-issue plan
-      description: Outline the work breakdown and sequencing in plain text; track actual children with native sub-issues after creation.
+      description: Outline the work and its sequence in plain text. Include links to existing child issues when available.
     validations:
       required: true
   - type: textarea

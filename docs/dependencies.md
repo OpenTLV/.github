@@ -111,7 +111,7 @@ security fixes appear, as part of [tooling maintenance](development.md#tooling-a
   add an unverified pip upgrade. CI retains SHA-pinned official setup/checkout
   actions, read-only permissions, and disabled checkout credential persistence.
 - The Markdown hook still installs from a reviewed full Git commit SHA and uses
-  the pinned Node.js 24.11.1 runtime. Its npm dependency resolution and Node
+  the pinned Node.js 24.22.3 runtime. Its npm dependency resolution and Node
   download are outside pip hash verification and are not a repository-owned npm
   lock. Keeping the existing isolated hook avoids adding a second JavaScript
   dependency-management system solely for one linter. Review hook/runtime

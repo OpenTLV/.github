@@ -120,7 +120,9 @@ repository and the captured immutable main commit. Record pagination and errors.
 ```sh
 gh api repos/OWNER/REPO
 gh api repos/OWNER/REPO/branches/main
-gh api 'repos/OWNER/REPO/rulesets?includes_parents=true'
+gh api 'repos/OWNER/REPO/rulesets?includes_parents=true&per_page=100' --paginate
+gh api 'repos/OWNER/REPO/rules/branches/main?per_page=100' --paginate
+gh api 'repos/OWNER/REPO/rulesets/RULESET_ID?includes_parents=true'
 gh api repos/OWNER/REPO/branches/main/protection
 gh api repos/OWNER/REPO/actions/permissions
 gh api repos/OWNER/REPO/actions/permissions/workflow
@@ -129,6 +131,14 @@ gh api 'repos/OWNER/REPO/commits/SHA/check-runs?per_page=100' --paginate
 gh api 'repos/OWNER/REPO/commits?sha=SHA&per_page=100' --paginate \
   --jq '.[] | {sha, parents: [.parents[].sha], verified: .commit.verification.verified, reason: .commit.verification.reason}'
 ```
+
+The branch rules response includes active rules inherited from higher scopes.
+Under `required_status_checks`, record each check name and integration ID and
+the strict status-check policy. Repeat the ruleset detail request for each
+distinct `ruleset_id` in the branch response, replacing `RULESET_ID` with its ID.
+GitHub returns `bypass_actors` to callers with write access to that ruleset.
+Record an omitted field as **Unavailable to inspect** and an explicit empty
+array as zero configured bypass actors. See the [GitHub rules API](https://docs.github.com/en/rest/repos/rules#get-a-repository-ruleset).
 
 Owners can additionally inspect `orgs/OWNER/actions/permissions`,
 `orgs/OWNER/actions/permissions/workflow`, and

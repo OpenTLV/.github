@@ -3,7 +3,7 @@ repos:
     rev: 192ad822316c3a22fb3d3cc8aa6eafa0b8488360 # v0.45.0
     hooks:
       - id: markdownlint
-        language_version: 24.11.1
+        language_version: 24.22.3
   - repo: local
     hooks:
       - id: community-files
