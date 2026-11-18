@@ -149,6 +149,8 @@ and [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
   `Fixed`, or `Security` where applicable; omit empty categories.
 - Keep released versions below Unreleased in reverse chronological order
   (newest release first).
+- **Prepend a newly introduced category at the top of its version section**,
+  before any existing categories. Categories have no fixed order.
 - **Prepend every new entry at the top of its category**, above all existing
   entries in that category. Never append it below older entries. This is an
   explicit OpenTLV convention in addition to Keep a Changelog.

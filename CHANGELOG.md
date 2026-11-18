@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Clarify that new changelog categories go at the top of their version section. (#43)
 - Publish the maintainer-designated private email for security fallback and project conduct reports, replacing the GitHub-only contact limitation. (#28)
 - Document GitHub-only private security routes, the responsible maintainer, conduct-reporting options, and remaining contact and verification limits. (#28)
 - Hash-lock the Python development dependency graph and run local Python hooks from the verified environment, with reproducible update guidance. (#23)
