@@ -17,10 +17,8 @@ unlocked build dependencies. The backend is also included in the full graph.
 This verifies source inputs, not a bit-for-bit reproducible locally built wheel.
 A future REUSE update with compatible wheels can remove this exception.
 
-Previously, only pre-commit, REUSE, and PyYAML were directly pinned. Their
-transitive dependencies were resolved at installation, and the three local Python
-hooks repeated unlocked installs in isolated environments. They now use
-`language: system` to run from the already installed development environment.
+The three local Python hooks use `language: system` and run from the
+hash-locked development environment.
 Activate the repository virtual environment before invoking hooks, including
 commits from an editor; dependencies are no longer installed automatically for
 these hooks. Missing tools fail the checks.
@@ -71,9 +69,13 @@ uv --no-config pip compile --python-version "$(cat .python-version)" --python-pl
 Run the compiler without package-index environment overrides so it uses the
 default PyPI index.
 
-CI runs the same generation command and fails if
-`git diff --exit-code -- requirements-dev.txt` detects changes to the committed
-lock. The quality job runs `python -m pip check` after installation.
+CI runs the same generation command on pull requests that change `.python-version`,
+a root `requirements-*` file, or `.github/workflows/quality.yml`, which contains
+the generator command. A difference fails that PR check. The weekly
+run reports differences as warnings and restores the committed lock before
+installation. A generation error still fails the run. New artifacts for an
+existing release can change the generated hashes even when versions stay pinned.
+Every run installs from the committed lock and runs `python -m pip check`.
 
 Regeneration retains existing pins where possible. For deliberate updates, edit
 direct pins in `requirements-dev.in`, then add `--upgrade` to the compiler

@@ -24,17 +24,36 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 2
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version-file: .python-version
       - name: Verify development lockfile reproducibility
+        if: github.event_name == 'pull_request' || github.event_name == 'schedule'
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            changed=$(git diff --name-only HEAD^1 HEAD -- ':(top,glob)requirements-*' .python-version .github/workflows/quality.yml)
+            if [[ -z "$changed" ]]; then
+              exit 0
+            fi
+          fi
           python -m venv .cache/lock-generator
           source .cache/lock-generator/bin/activate
           python -m pip install --require-hashes --only-binary=:all: -r requirements-lock.txt
           uv --no-config pip compile --python-version "$(cat .python-version)" --python-platform x86_64-manylinux_2_39 --generate-hashes --only-binary=:all: --no-binary=reuse --output-file requirements-dev.txt requirements-dev.in
-          git diff --exit-code -- requirements-dev.txt
+          if git diff --exit-code -- requirements-dev.txt; then
+            exit 0
+          else
+            diff_status=$?
+          fi
+          if [[ "$EVENT_NAME" != schedule || "$diff_status" != 1 ]]; then
+            exit "$diff_status"
+          fi
+          echo '::warning file=requirements-dev.txt::Regenerated lock differs from the committed lock. Review upstream changes before refreshing it.'
+          git restore --worktree -- requirements-dev.txt
       - run: |
           python -m pip install --require-hashes --only-binary=:all: -r requirements-build.txt
           python -m pip install --require-hashes --no-build-isolation --only-binary=:all: --no-binary=reuse -r requirements-dev.txt

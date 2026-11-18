@@ -1,9 +1,9 @@
 # Repository governance baseline
 
-This is the source of truth for the proposed OpenTLV governance baseline under
-[issue #10](https://github.com/OpenTLV/.github/issues/10). It applies to new,
-eligible repositories, starting with OpenTLV/.github. It is a proposal for review,
-not evidence of enabled GitHub settings. Applying or changing settings requires
+This is the OpenTLV governance baseline established in
+[issue #10](https://github.com/OpenTLV/.github/issues/10). Use it when configuring
+eligible repositories and verify the effective settings in each repository.
+OpenTLV/.github has an active main-branch ruleset. Applying or changing settings requires
 separate maintainer approval. Never rewrite main, force-push, or bypass protection
 to implement or test this baseline.
 
@@ -30,14 +30,14 @@ Sources: [repository ruleset availability](https://docs.github.com/en/repositori
 [organization Actions settings](https://docs.github.com/en/organizations/managing-organization-settings/disabling-or-limiting-github-actions-for-your-organization),
 and [organization security management](https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-security-settings-for-your-organization/managing-security-and-analysis-settings-for-your-organization).
 
-## Proposed main branch controls
+## Main branch controls
 
 Use a repository branch ruleset targeting `refs/heads/main`, or equivalent classic
 protection if required. Avoid overlapping configurations with conflicting rules.
 
-| Setting | Proposed value |
+| Setting | Value |
 | --- | --- |
-| Enforcement | Active only after separate approval and safe validation |
+| Enforcement for new rulesets | Activate after maintainer approval and verification |
 | Require signed commits | Enabled; verify every newly introduced commit, including bot commits |
 | Require a pull request | Enabled |
 | Required approving reviews | 0 for the current solo-maintainer workflow |
@@ -53,11 +53,10 @@ protection if required. Avoid overlapping configurations with conflicting rules.
 For OpenTLV/.github require `quality` and `workflow-analyzers`, both produced
 by GitHub Actions, app ID `15368`. Another repository must select its own checks.
 
-For the PR introducing `workflow-analyzers`, verify that both checks succeed
-on its current head. Before merging, add `workflow-analyzers` to the existing
-`quality` requirement and select GitHub Actions as the source. Keep strict
-status checks and the other main-branch protections enabled. Confirm the PR is
-mergeable after the update and verify that both jobs pass on `main`.
+On 2026-11-18, the active [OpenTLV/.github ruleset](https://github.com/OpenTLV/.github/rules/27459354)
+required `quality` from GitHub Actions with strict status checks. The workflow
+also reported `workflow-analyzers`. Check the effective required-check list
+when auditing enforcement.
 
 Keep **Allow merge commits** enabled. Propose disabling squash and rebase merge
 methods for this history-preserving policy. Do not apply that change without

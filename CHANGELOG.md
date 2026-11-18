@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Align governance and adoption guidance with the active ruleset and verified private reporting settings. (#59)
+- Limit blocking lockfile reproducibility checks to dependency-related PRs and report weekly hash drift as a warning. (#59)
 - Use the pinned uv version for dependency lock regeneration and align the documented command with the generated lockfile header. (#41)
 - Catch broken reference-style and HTML links, validate explicit HTML anchors, and keep Markdown validation running after unmatched backticks and invalid UTF-8 Git paths. (#40)
 - Validate dropdown and checkbox option structure and document the text-only asset policy, with explicit rejection of unexpected binary content. (#27)
