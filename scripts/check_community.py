@@ -1,5 +1,6 @@
 """Validate repository text, local Markdown links, and GitHub issue forms."""
 
+from html.parser import HTMLParser
 from pathlib import Path
 import html
 import json
@@ -14,7 +15,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_FILE_BYTES = 1024 * 1024
-REPOSITORY_FILES = "/OpenTLV/.github/blob/main/"
+REPOSITORY_FILES = r"/(?i:OpenTLV/\.github)/blob/main/"
 BINARY_SUFFIXES = frozenset({
     ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".pdf",
     ".zip", ".gz", ".7z", ".exe", ".dll", ".so", ".pyc",
@@ -42,10 +43,61 @@ def without_fences(text: str) -> str:
     return "\n".join(lines)
 
 
+def without_code_spans(text: str) -> str:
+    """Mask spans with matching backtick runs within a paragraph."""
+    paragraphs = re.split(r"(\n[ \t]*\n)", text)
+    for index in range(0, len(paragraphs), 2):
+        paragraph = paragraphs[index]
+        runs = list(re.finditer(r"`+", paragraph))
+        next_run = {}
+        closing = {}
+        for run in reversed(runs):
+            length = len(run[0])
+            closing[run.start()] = next_run.get(length)
+            next_run[length] = run
+        parts = []
+        end = 0
+        for run in runs:
+            if run.start() < end:
+                continue
+            opener = run.start()
+            while opener and paragraph[opener - 1] == "\\":
+                opener -= 1
+            if (run.start() - opener) % 2:
+                continue
+            match = closing[run.start()]
+            if match:
+                parts.append(paragraph[end:run.start()])
+                parts.append(re.sub(r"[^\n]", " ", paragraph[run.start():match.end()]))
+                end = match.end()
+        parts.append(paragraph[end:])
+        paragraphs[index] = "".join(parts)
+    return "".join(paragraphs)
+
+
+class MarkdownHTML(HTMLParser):
+    def __init__(self, text: str):
+        super().__init__()
+        self.anchors = set()
+        self.links = []
+        self.feed(text)
+        self.close()
+
+    def handle_starttag(self, tag, attrs):
+        for name, value in attrs:
+            if not value:
+                continue
+            if name == "id":
+                self.anchors.add(value)
+            elif name == "href":
+                self.links.append(value)
+
+
 def heading_anchors(text: str) -> set[str]:
     """Anchors for ordinary ATX/single-line setext headings, including duplicates."""
     anchors = set()
-    lines = without_fences(text).splitlines()
+    text = without_fences(text)
+    lines = text.splitlines()
     for index, line in enumerate(lines):
         match = re.match(r" {0,3}#{1,6}(?:[ \t]+(.*)|$)", line)
         if match:
@@ -72,24 +124,41 @@ def heading_anchors(text: str) -> set[str]:
             number += 1
             candidate = f"{slug}-{number}"
         anchors.add(candidate)
-    return anchors
+    return anchors | MarkdownHTML(without_code_spans(text)).anchors
 
 
 def markdown_links(text: str) -> list[str]:
-    """Extract ordinary inline links and autolinks, excluding fenced/inline code."""
-    text = without_fences(text)
-    text = re.sub(r"(`+).*?\1", "", text, flags=re.DOTALL)
+    """Extract supported destinations outside fenced and inline code."""
+    text = without_code_spans(without_fences(text))
+    reference = (
+        r"^ {0,3}\[(?:\\.|[^\[\]\\\n])+\]:[ \t]*(?:\n[ \t]*)?"
+        r"(?:<([^>\n]+)>|([^\s<>]+))"
+        r"(?:[ \t]+(?:\"[^\"\n]*\"|'[^'\n]*'|\([^()\n]*\)))?[ \t]*$"
+    )
+    targets = [angle or plain for angle, plain in re.findall(reference, text, re.MULTILINE)]
+    text = re.sub(reference, "", text, flags=re.MULTILINE)
     inline = r"\[[^\]\n]*\]\(\s*(?:<([^>\n]+)>|([^\s)]+))(?:[^\n)]*)\)"
     links = re.findall(inline, text)
-    targets = [angle or plain for angle, plain in links]
+    targets.extend(angle or plain for angle, plain in links)
     text = re.sub(inline, "", text)
     targets.extend(re.findall(r"<((?:https?://|#)[^<>\s]+)>", text))
+    targets.extend(MarkdownHTML(text).links)
     text = re.sub(r"<[^>\n]*>", "", text)
     # GitHub also autolinks bare same-repository file URLs.
     targets.extend(target.rstrip(".,;!?") for target in re.findall(
-        r"https?://github\.com/OpenTLV/\.github/blob/main/[^\s<>\])]+", text,
+        r"(?i:https?://github\.com)" + REPOSITORY_FILES + r"[^\s<>\])]*", text,
     ))
     return sorted(set(targets))
+
+
+def has_exact_path(root: Path, path: Path) -> bool:
+    """Check checkout spelling even on case-insensitive filesystems."""
+    parent = root
+    for part in path.relative_to(root).parts:
+        if part != ".." and not any(child.name == part for child in parent.iterdir()):
+            return False
+        parent = parent / part
+    return True
 
 
 def check_links(root: Path, path: Path, text: str) -> list[str]:
@@ -99,12 +168,13 @@ def check_links(root: Path, path: Path, text: str) -> list[str]:
             link = urlsplit(target)
             repository_file = False
             if link.scheme or link.netloc:
+                prefix = re.match(REPOSITORY_FILES, link.path)
                 if (link.scheme not in {"http", "https"} or
                         link.netloc.lower() != "github.com" or
-                        not link.path.startswith(REPOSITORY_FILES)):
+                        not prefix):
                     continue
                 base = root
-                raw_path = link.path[len(REPOSITORY_FILES):]
+                raw_path = link.path[prefix.end():]
                 repository_file = True
             else:
                 base = root if link.path.startswith("/") else path.parent
@@ -113,12 +183,14 @@ def check_links(root: Path, path: Path, text: str) -> list[str]:
             # Reject Windows separators, drive/ADS syntax, and NUL on every OS.
             if any(char in decoded for char in ("\\", ":", "\0")):
                 raise ValueError("invalid local path")
-            destination = (base / decoded).resolve() if (decoded or repository_file) else path.resolve()
+            requested = base / decoded if decoded or repository_file else path
+            destination = requested.resolve()
             destination.relative_to(root.resolve())
+            exists = destination.exists() and has_exact_path(root, requested)
         except (ValueError, OSError, RuntimeError):
             errors.append(f"unsafe local link target {target}")
             continue
-        if not destination.exists() or (repository_file and not destination.is_file()):
+        if not exists or (repository_file and not destination.is_file()):
             errors.append(f"missing local link target {target}")
             continue
         if link.fragment and destination.is_file() and destination.suffix.lower() == ".md":
@@ -131,7 +203,7 @@ def check_links(root: Path, path: Path, text: str) -> list[str]:
                 errors.append(f"unreadable Markdown link target {target}")
                 continue
             if unquote(link.fragment) not in anchors:
-                errors.append(f"missing local heading anchor {target}")
+                errors.append(f"missing local Markdown anchor {target}")
     return errors
 
 
@@ -154,15 +226,22 @@ def check(root: Path = ROOT) -> list[str]:
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
         cwd=root, check=True, capture_output=True,
     )
-    paths = sorted(set(result.stdout.decode("utf-8").split("\0")) - {""})
-    for name in paths:
+    paths = sorted(set(result.stdout.split(b"\0")) - {b""})
+    for raw_name in paths:
+        try:
+            name = raw_name.decode("utf-8")
+        except UnicodeDecodeError:
+            name = raw_name.decode("utf-8", errors="backslashreplace")
+            errors.append(f"{name}: expected a UTF-8 path")
+            continue
         path = root / name
+        suffix = path.suffix.lower()
         if not path.is_file():
             continue
         if path.stat().st_size > MAX_FILE_BYTES:
             errors.append(f"{name}: file exceeds the 1 MiB repository limit")
             continue
-        if path.suffix.lower() in BINARY_SUFFIXES:
+        if suffix in BINARY_SUFFIXES:
             errors.append(f"{name}: binary asset type is not approved")
             continue
         try:
@@ -179,22 +258,22 @@ def check(root: Path = ROOT) -> list[str]:
             errors.append(f"{name}: missing final newline")
         if any(line.rstrip() != line for line in text.splitlines()):
             errors.append(f"{name}: trailing whitespace")
-        if has_conflict_markers(text, path.suffix == ".md"):
+        if has_conflict_markers(text, suffix == ".md"):
             errors.append(f"{name}: possible merge conflict marker")
-        if path.suffix == ".md":
+        if suffix == ".md":
             errors.extend(f"{name}: {error}" for error in check_links(root, path, text))
         if path.suffix == ".json":
             try:
                 json.loads(text, parse_constant=reject_json_constant)
             except ValueError as exc:
                 errors.append(f"{name}: invalid JSON: {exc}")
-        if path.suffix in {".yml", ".yaml"}:
+        if suffix in {".yml", ".yaml"}:
             try:
                 data = yaml.safe_load(text)
             except yaml.YAMLError as exc:
                 errors.append(f"{name}: invalid YAML: {exc}")
                 continue
-            if path.parent.name == "ISSUE_TEMPLATE" and path.name != "config.yml":
+            if path.parent.name == "ISSUE_TEMPLATE" and path.stem + suffix != "config.yml":
                 errors.extend(check_form(name, data))
     return errors
 

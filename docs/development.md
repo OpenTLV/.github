@@ -107,33 +107,39 @@ requires one.
 ### Local link and conflict-marker checks
 
 The community checker validates ordinary inline Markdown links and images,
-angle-bracket autolinks, and bare file URLs of the form
-`https://github.com/OpenTLV/.github/blob/main/<path>`. Those repository URLs map
-to files in the current checkout, including uncommitted changes; directory
-targets are invalid for `blob` URLs. Other hosts, repositories, and Git refs are
-not fetched or checked. CI makes no external-network link requests.
+angle-bracket autolinks, HTML `href` attributes, and bare file URLs of the form
+`https://github.com/OpenTLV/.github/blob/main/<path>`. It checks reference-style
+destinations at their definitions, including unused definitions. Repository URLs
+map to files in the current checkout, including uncommitted changes. The GitHub
+host, owner, and repository name are case-insensitive. The `blob/main/` prefix
+and target path retain their case, and `blob` targets must be files. CI checks
+these destinations without making network requests.
 
 Relative paths resolve from the containing document; paths beginning with `/`
 resolve from the repository root. Percent-encoded paths and fragments are
 decoded. Paths escaping the checkout, including resolved symlinks, Windows
 drive/stream syntax, backslashes, and NUL bytes, are rejected.
 
-For Markdown targets, fragments must match supported heading anchors. This
-includes same-document fragments, ordinary ATX headings, and single-line setext
-headings. Normalization lowercases text, removes punctuation and formatting,
+For Markdown targets, fragments must match a heading anchor or an explicit HTML
+`id`, including for same-document links. HTML IDs are case-sensitive. Heading
+anchors cover ordinary ATX headings and single-line setext headings.
+Normalization lowercases text, removes punctuation and formatting,
 preserves Unicode letters/numbers and underscores, replaces spaces with hyphens,
 and adds numeric suffixes for duplicate headings, including suffix collisions.
 Inline code text, simple link labels, and HTML entities in headings are supported.
 See GitHub's [section-link rules](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#section-links).
 
-This is a limited Markdown checker, not a complete GitHub renderer. Reference-style
-links, raw HTML links/custom anchors, multiline or complex nested headings, and
-line-range fragments are not supported. Use ordinary heading links for checked
-fragments; non-Markdown target fragments are not validated. Use percent encoding
-or angle-wrapped inline destinations for paths containing spaces or parentheses.
+The checker covers the syntax above. Multiline or complex nested headings,
+line-range fragments, and fragments on non-Markdown targets are outside that
+scope. Use percent encoding or angle-wrapped Markdown destinations for paths
+containing spaces or parentheses.
 Links and headings inside backtick or tilde fences (up to three leading spaces)
-are ignored; inline code examples are also excluded from link extraction.
+are ignored. Matching inline code spans are excluded from link and HTML ID
+extraction. Unmatched backticks leave subsequent links visible.
 Nested list/blockquote fences and indented code blocks are outside this subset.
+
+Markdown and YAML suffixes are matched case-insensitively. Git paths with invalid
+UTF-8 bytes are reported using byte escapes, and validation continues.
 
 Conflict scanning still examines all file text, including code examples. Opening,
 closing, and diff3-base markers are rejected. A standalone separator is rejected
