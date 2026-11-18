@@ -1,5 +1,6 @@
 name: Epic
 description: Coordinate larger work through native GitHub sub-issues.
+type: Epic
 body:
   - type: markdown
     attributes:

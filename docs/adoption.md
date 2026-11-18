@@ -19,6 +19,7 @@ Bug report, Feature request, and Chore default to `bug`, `enhancement`, and
 `chore`, respectively. Create those labels in each consuming repository that
 uses the shared forms. GitHub applies a default label only when that label
 already exists in the repository where the issue is filed.
+The Task and Epic forms use the corresponding organization issue types.
 
 The shared chooser offers Bug report for reproducible defects, Feature request
 for new capabilities, Task for defined implementation work, Chore for maintenance,
@@ -228,6 +229,7 @@ policies or creating test issues without agreement.
 | Form validation | Choose each form and attempt submission without required fields | Required fields prevent submission; no issue needs to be created |
 | Valid submissions | In the agreed public test repository, submit one clearly marked test issue per form with all required fields completed | Each issue is created with the supplied fields; record its URL and close it as a test |
 | Default labels | Inspect the submitted Bug report, Feature request, and Chore issues in the consuming repository | The issues have `bug`, `enhancement`, and `chore`, respectively |
+| Default issue types | Inspect the submitted Task and Epic issues in the consuming repository | The issues have the Task and Epic types, respectively |
 | Local form override | On the test repository's default branch add a valid local form with a unique name | Only local forms appear; all shared forms disappear |
 | Configuration override | Replace that local form with a local config.yml containing blank_issues_enabled: true | Shared forms remain absent |
 | Restore inheritance | Remove the test repository's local ISSUE_TEMPLATE directory | Shared forms return |
