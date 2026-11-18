@@ -49,8 +49,8 @@ packages without rechecking their installed bytes.
 
 ## Reproducing and updating the lock
 
-We use uv 0.9.5's universal pip compiler as the equivalent of
-`pip-compile --generate-hashes`: it emits a pip-compatible requirements file with
+Use the uv version pinned in `requirements-lock.txt`. Its universal pip compiler
+produces a pip-compatible requirements file with
 the full graph, markers, and hashes from package-index metadata. This avoids
 maintaining separate Linux and Windows locks. uv is a maintainer-only generator;
 ordinary contributors and CI install the resulting lock with pip.
@@ -66,8 +66,11 @@ Use `. .cache/lock-generator/bin/activate` on POSIX or
 
 ```sh
 python -m pip install --require-hashes --only-binary=:all: -r requirements-lock.txt
-uv --no-config pip compile --universal --python-version 3.10 --generate-hashes --only-binary=:all: --no-binary=reuse --index-url https://pypi.org/simple --output-file requirements-dev.txt requirements-dev.in
+uv --no-config pip compile --universal --python-version 3.10 --generate-hashes --only-binary=:all: --no-binary=reuse --output-file requirements-dev.txt requirements-dev.in
 ```
+
+Run the compiler without package-index environment overrides so it uses the
+default PyPI index.
 
 Regeneration retains existing pins where possible. For deliberate updates, edit
 direct pins in `requirements-dev.in`, then add `--upgrade` to the compiler
@@ -79,8 +82,8 @@ additions, environment markers, release notes, and upstream artifact metadata.
 Hashes protect approved bytes; they do not prove a package is trustworthy.
 
 When updating uv itself, update its exact version and approved wheel hashes in
-`requirements-lock.txt` together, review the release, and update the generator
-version documented here. The generator has no Python dependencies.
+`requirements-lock.txt` together and review the release. The generator has no
+Python dependencies.
 
 Validate each supported interpreter in a fresh environment with:
 
