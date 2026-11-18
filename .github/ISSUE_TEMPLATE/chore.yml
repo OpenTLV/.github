@@ -1,5 +1,6 @@
 name: Chore
 description: Propose repository maintenance, tooling, or documentation work.
+labels: [chore]
 body:
   - type: markdown
     attributes:

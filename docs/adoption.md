@@ -13,8 +13,12 @@ files with multiple locations, GitHub checks `.github/`, root, then `docs/`.
 A valid local `.github/ISSUE_TEMPLATE` form/template or configuration replaces
 the entire organization's default issue-template directory; GitHub does not
 merge individual inherited forms with local forms. Copy every form you want to
-keep when defining local templates. Our forms do not assign labels or people,
-so consuming repositories need no matching labels or accounts.
+keep when defining local templates.
+
+Bug report, Feature request, and Chore default to `bug`, `enhancement`, and
+`chore`, respectively. Create those labels in each consuming repository that
+uses the shared forms. GitHub applies a default label only when that label
+already exists in the repository where the issue is filed.
 
 The shared chooser offers Bug report for reproducible defects, Feature request
 for new capabilities, Task for defined implementation work, Chore for maintenance,
@@ -223,6 +227,7 @@ policies or creating test issues without agreement.
 | Maintainer blank issue | Open the same chooser with Write, Maintain, or Admin access | Built-in Blank issue option appears with the Maintainers only label |
 | Form validation | Choose each form and attempt submission without required fields | Required fields prevent submission; no issue needs to be created |
 | Valid submissions | In the agreed public test repository, submit one clearly marked test issue per form with all required fields completed | Each issue is created with the supplied fields; record its URL and close it as a test |
+| Default labels | Inspect the submitted Bug report, Feature request, and Chore issues in the consuming repository | The issues have `bug`, `enhancement`, and `chore`, respectively |
 | Local form override | On the test repository's default branch add a valid local form with a unique name | Only local forms appear; all shared forms disappear |
 | Configuration override | Replace that local form with a local config.yml containing blank_issues_enabled: true | Shared forms remain absent |
 | Restore inheritance | Remove the test repository's local ISSUE_TEMPLATE directory | Shared forms return |

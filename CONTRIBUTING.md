@@ -117,8 +117,10 @@ repository's documented automated checks as well.
 
 ### Issue and PR labels
 
-Maintainers apply labels that describe the work. Use labels available in the
-destination repository; local label conventions take precedence.
+The shared Bug report, Feature request, and Chore forms apply `bug`,
+`enhancement`, and `chore`, respectively, where those labels exist.
+Maintainers apply any additional labels that describe the work. Use labels
+available in the destination repository and follow its local conventions.
 
 | Label | Purpose |
 | --- | --- |
