@@ -45,8 +45,8 @@ and [issue template guidance](https://docs.github.com/en/communities/using-templ
 ## Maintainer onboarding
 
 Branch protections, merge policy, Actions governance, and their inspection limits
-are documented in the [governance baseline](governance.md). That document is a
-proposal requiring separate approval; community defaults do not enforce it.
+are documented in the [governance baseline](governance.md). Verify the effective
+settings for each repository and obtain maintainer approval for changes.
 
 1. Review the defaults against the destination project's requirements. Add local
    policies when ownership, support windows, contacts, or contribution steps differ.
@@ -281,7 +281,7 @@ page or an unavailable inspection does not establish an authenticated setting.
 | --- | --- |
 | Inherited support links and PR template | Pending signed-in UI verification using the deployment acceptance procedure |
 | Issue forms, required fields, and local template/config overrides | Pending signed-in UI verification; signed-out access to the consuming repository's issue chooser redirected to login |
-| Private vulnerability reporting setting and non-maintainer visibility | Pending authenticated setup and verification; public advisory pages alone do not establish whether reporting is enabled |
+| Private vulnerability reporting setting and non-maintainer visibility | The API confirmed `enabled: true` for both repositories on 2026-11-17. Reporter-side access remains pending. |
 | Dependency graph | A maintainer-provided screenshot showed it disabled on 2026-11-16; enabling and verifying the repository setting remains pending in this record |
 | Dependabot alerts and security updates | Pending authenticated setup and verification; the committed version-update configuration does not establish these settings |
 

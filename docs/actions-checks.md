@@ -4,15 +4,17 @@ The repository-local `Community quality` workflow runs two independent jobs
 in parallel on Ubuntu 24.04 x86-64 with the
 [configured Python version](../.python-version).
 
-- `quality` verifies
+- `quality` checks
   [lockfile reproducibility](dependencies.md#reproducing-and-updating-the-lock)
   and runs `pip check` and pre-commit (community validation, regression tests,
   Markdown lint, and REUSE).
 - `workflow-analyzers` runs actionlint 1.7.12 and zizmor 1.32.0.
 
 The workflow runs on pull requests, pushes to `main`, manual dispatch, and every
-Monday at 06:23 UTC. Both jobs are required for PRs targeting `main` under the
-[main branch ruleset](governance.md#proposed-main-branch-controls).
+Monday at 06:23 UTC. Both jobs report on pull requests targeting `main`.
+The [governance baseline](governance.md#main-branch-controls) lists
+the required-check policy and the last verified ruleset state.
+The job split is recorded in [issue #46](https://github.com/OpenTLV/.github/issues/46).
 
 ## Weekly run and notifications
 
@@ -21,11 +23,8 @@ notifications to the account that last changed the cron expression. A maintainer
 who re-enables a disabled workflow becomes the recipient instead. Delivery depends
 on that account's GitHub Actions notification settings. See GitHub's
 [workflow notification rules](https://docs.github.com/en/actions/concepts/workflows-and-actions/notifications-for-workflow-runs).
-
-The expected recipient is `@marekcingel` once that account adds the schedule.
-After the first scheduled run, verify its actor in Actions and confirm that the
-account has workflow failure notifications enabled. Record the run and the
-confirmed recipient in #47.
+The schedule and online audit rollout are recorded in
+[issue #47](https://github.com/OpenTLV/.github/issues/47).
 
 ## Local reproduction
 
@@ -80,9 +79,7 @@ Online mode enables `impostor-commit` for SHA provenance and
 `ref-version-mismatch` for version comments that disagree with their pins.
 The `stale-action-refs` rule checks whether a pin points to a tag and reports
 untagged pins under zizmor's pedantic persona.
-Review the first push and scheduled run to confirm the online step succeeds
-with `contents: read`. On the PR, verify the offline step runs and the online
-step is skipped. See the [zizmor audit rules](https://docs.zizmor.sh/audits/).
+See the [zizmor audit rules](https://docs.zizmor.sh/audits/).
 
 ## Suppressions and updates
 

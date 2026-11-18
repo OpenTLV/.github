@@ -179,6 +179,8 @@ Node.js download service.
 - Review analyzer releases monthly and when relevant security fixes appear.
   Follow the [analyzer integrity and update policy](actions-checks.md#suppressions-and-updates)
   for paired versions, artifact URLs, and hashes.
+- During monthly tooling review, check the scheduled `Community quality` runs
+  for lockfile drift warnings before deciding whether to regenerate the lock.
 
 The full Python development graph is pinned and hash-checked, including
 transitive dependencies. The analyzer and lock-generator wheel requirements are
