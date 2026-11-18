@@ -4,5 +4,5 @@ contact_links:
     url: https://github.com/OpenTLV/.github/blob/main/SECURITY.md
     about: Read this before reporting a vulnerability. Do not disclose details publicly.
   - name: Community support
-    url: https://github.com/OpenTLV/.github/blob/main/SUPPORT.md
-    about: Find the right place for usage questions and help.
+    url: https://github.com/OpenTLV/opentlv/discussions/categories/q-a
+    about: Ask a usage question or find an existing answer in OpenTLV Q&A.

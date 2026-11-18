@@ -59,6 +59,71 @@ class CommunityValidationTests(unittest.TestCase):
         self.assertTrue(any("missing description" in e for e in errors))
         self.assertTrue(any("form needs body fields" in e for e in errors))
 
+    def test_issue_chooser_checks_exact_contact_urls(self):
+        self.write("docs/policy(v2).md", b"# Reporting\n")
+        config = ".github/ISSUE_TEMPLATE/config.yml"
+        base = "https://github.com/OpenTLV/.github/blob/main/"
+        urls = [
+            base + "docs/policy(v2).md#reporting",
+            "https://example.invalid/support",
+            base + "missing.md",
+            base + "docs/policy(v2).md#absent",
+        ]
+        self.write(config, yaml.safe_dump({"contact_links": [
+            {"name": "Help", "url": url, "about": "Read the policy."} for url in urls
+        ]}).encode())
+        self.assertEqual(check(self.root), [
+            f"{config}: contact_links[2].url: missing local link target {urls[2]}",
+            f"{config}: contact_links[3].url: missing local Markdown anchor {urls[3]}",
+        ])
+
+    def test_issue_form_checks_rendered_markdown_links(self):
+        self.write("SUPPORT.md", b"# Getting help\n")
+        form = ".github/ISSUE_TEMPLATE/support.yml"
+        base = "https://github.com/OpenTLV/.github/blob/main/"
+        self.write(form, yaml.safe_dump({
+            "name": "Support", "description": "Get help.",
+            "body": [
+                {"type": "markdown", "attributes": {"value": (
+                    f"See {base}SUPPORT.md#getting-help.\n"
+                    f"Report using {base}missing.md.\n"
+                    f"[Contact]({base}SUPPORT.md#absent)\n"
+                    "`[example](example.md)`\n"
+                )}},
+                {"type": "textarea", "id": "question", "attributes": {
+                    "label": "Question", "placeholder": "[example](example.md)",
+                }},
+            ],
+        }).encode())
+        self.assertCountEqual(check(self.root), [
+            f"{form}: missing local link target {base}missing.md",
+            f"{form}: missing local Markdown anchor {base}SUPPORT.md#absent",
+        ])
+
+    def test_invalid_issue_link_values_report_file_and_field(self):
+        config = ".github/ISSUE_TEMPLATE/config.yml"
+        form = ".github/ISSUE_TEMPLATE/example.yml"
+        self.write(config, b"contact_links:\n  - url: []\n")
+        self.write(form, b"name: Help\ndescription: Get help.\nbody:\n"
+                         b"  - type: markdown\n    attributes:\n      value: [bad]\n")
+        self.assertCountEqual(check(self.root), [
+            f"{config}: contact_links[0].url: expected a non-empty URL",
+            f"{form}: markdown field needs a non-empty text value",
+        ])
+
+    def test_valid_upload_field(self):
+        self.write(".github/ISSUE_TEMPLATE/attachment.yml", yaml.safe_dump({
+            "name": "Attachment",
+            "description": "Submit a screenshot.",
+            "body": [{
+                "type": "upload",
+                "id": "screenshot",
+                "attributes": {"label": "Screenshot"},
+                "validations": {"required": True, "accept": ".png,.jpg"},
+            }],
+        }).encode())
+        self.assertEqual(check(self.root), [])
+
     def write_choice_form(self, kind, attributes):
         self.write(".github/ISSUE_TEMPLATE/choices.yml", yaml.safe_dump({
             "name": "Choices",
@@ -279,6 +344,31 @@ class CommunityValidationTests(unittest.TestCase):
                 self.skipTest(f"symlink creation unavailable: {error}")
             self.write("README.md", b"# Guide\n\n[Escape](escape.md#outside)\n")
             self.assertTrue(any("unsafe local link target" in e for e in check(self.root)))
+
+    def test_rejects_file_and_dangling_symlinks_without_reading_targets(self):
+        self.write("notes.txt", b"Plain text\n")
+        try:
+            (self.root / "linked.json").symlink_to("notes.txt")
+            (self.root / "dangling.md").symlink_to("missing.md")
+        except OSError as error:
+            self.skipTest(f"symlink creation unavailable: {error}")
+        self.assertEqual(check(self.root), [
+            "dangling.md: symbolic links are not allowed",
+            "linked.json: symbolic links are not allowed",
+        ])
+
+    def test_rejects_tracked_file_under_a_replaced_directory(self):
+        self.write("docs/guide.md", b"# Guide\n")
+        subprocess.run(
+            ["git", "add", "docs/guide.md"], cwd=self.root, check=True, capture_output=True,
+        )
+        docs = self.root / "docs"
+        docs.rename(self.root / "moved")
+        try:
+            docs.symlink_to("moved", target_is_directory=True)
+        except OSError as error:
+            self.skipTest(f"symlink creation unavailable: {error}")
+        self.assertIn("docs/guide.md: symbolic links are not allowed", check(self.root))
 
     def test_links_cannot_escape_repository(self):
         self.write("README.md", (

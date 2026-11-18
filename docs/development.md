@@ -73,6 +73,8 @@ boolean. Option labels must be unique within each field. Quote numeric-looking
 or boolean-looking dropdown choices to keep them strings when YAML is parsed.
 Checkbox labels may contain Markdown.
 
+Issue forms can use `type: upload` with a field ID and a label for attachments.
+
 These checks cover option structure, not the complete GitHub form schema or
 rendering behavior. Follow GitHub's [form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema)
 for other attributes and verify form behavior after deployment when needed.
@@ -86,6 +88,9 @@ binary extensions (the case-insensitive `BINARY_SUFFIXES` set in
 `scripts/check_community.py`), invalid UTF-8, and NUL-containing content, including
 when a file has been renamed to a text extension. This is a text policy, not a
 complete file-format detector; other text-encoded payloads still require review.
+
+The checker rejects symbolic links, including dangling links and tracked files
+whose parent directory has been replaced by a symbolic link.
 
 An image suffix or a location under `profile/` does not grant an exception.
 Verification screenshots and temporary artifacts stay outside Git in ignored
@@ -114,6 +119,11 @@ map to files in the current checkout, including uncommitted changes. The GitHub
 host, owner, and repository name are case-insensitive. The `blob/main/` prefix
 and target path retain their case, and `blob` targets must be files. CI checks
 these destinations without making network requests.
+
+The same local target and heading checks apply to `contact_links[].url` in
+`.github/ISSUE_TEMPLATE/config.yml` and to the Markdown in issue forms'
+`body[].attributes.value` for entries of type `markdown`. Use absolute GitHub
+file URLs for shared policies so the links also work in consuming repositories.
 
 Relative paths resolve from the containing document; paths beginning with `/`
 resolve from the repository root. Percent-encoded paths and fragments are
@@ -164,14 +174,19 @@ Follow the [licensing instructions](licensing.md).
 ## Tooling and updates
 
 Pre-commit installs markdownlint-cli 0.45.0 from its pinned Git commit and an
-isolated Node.js 24.11.1 runtime; a global Node.js installation is not required.
+isolated Node.js 24.22.3 runtime; a global Node.js installation is not required.
 The first run needs network access to GitHub, PyPI, the npm registry, and the
 Node.js download service.
 
-- Dependabot checks SHA-pinned workflow actions monthly. Routine version updates
-  are eligible once a release is at least seven days old, and are picked up at
-  an update check. Dependabot security updates are exempt from the cooldown.
-  See [Dependabot cooldown options](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#cooldown).
+- Dependabot checks SHA-pinned workflow actions monthly for releases at least
+  seven days old. GitHub generates Dependabot alerts only for actions referenced
+  by semantic version, so these SHA pins receive no alert-driven security PRs.
+  See [Dependabot cooldown](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference#cooldown)
+  and [GitHub's alert coverage](https://docs.github.com/en/code-security/reference/supply-chain-security/dependency-graph-supported-package-ecosystems).
+- Review online zizmor findings from pushes to `main` and weekly runs. When a
+  published advisory affects a pin, verify the fixed upstream release and update
+  the full SHA and its version comment promptly.
+  See [zizmor's advisory check](https://docs.zizmor.sh/audits/#known-vulnerable-actions).
 - Maintain direct Python pins in `requirements-dev.in` and regenerate
   `requirements-dev.txt` using the [dependency integrity policy](dependencies.md).
   Local Python hooks use that environment and have no separate dependency pins.

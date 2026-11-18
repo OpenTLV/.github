@@ -1,8 +1,9 @@
 # Getting help
 
-Start with the affected project's README and documentation. Search its existing
-issues before opening a new one. For usage questions, use that repository's
-Discussions if enabled; otherwise open an issue with the question and context.
+Start with the affected project's README and local support instructions. For
+usage questions, search existing answers or ask in
+[OpenTLV Q&A](https://github.com/OpenTLV/opentlv/discussions/categories/q-a).
+For bugs, search the affected repository's issues before opening a new report.
 
 Include the repository, revision or version, operating system, relevant tools,
 expected outcome, actual outcome, and a minimal reproducible example. Sanitize
@@ -20,8 +21,7 @@ Report a component problem in that component's repository. For a problem spannin
 multiple repositories, start with the repository where it is reproducible,
 identify the other affected components, and link related issues rather than
 opening duplicate reports. Maintainers can coordinate or redirect the report.
-If ownership is unclear, ask in the affected repository without assuming that a
-particular maintainer or team is responsible.
+If ownership is unclear, ask in OpenTLV Q&A and name the affected component.
 
 For organization policies and shared templates, use
 <https://github.com/OpenTLV/.github/issues>.

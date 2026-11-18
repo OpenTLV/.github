@@ -161,9 +161,9 @@ def has_exact_path(root: Path, path: Path) -> bool:
     return True
 
 
-def check_links(root: Path, path: Path, text: str) -> list[str]:
+def check_link_targets(root: Path, path: Path, targets: list[str]) -> list[str]:
     errors = []
-    for target in markdown_links(text):
+    for target in targets:
         try:
             link = urlsplit(target)
             repository_file = False
@@ -219,6 +219,16 @@ def has_conflict_markers(text: str, markdown: bool) -> bool:
     return False
 
 
+def contains_symlink(root: Path, relative_path: Path) -> bool:
+    """Check from the root down, including parents of paths in Git's index."""
+    current = root
+    for part in relative_path.parts:
+        current = current / part
+        if current.is_symlink():
+            return True
+    return False
+
+
 def check(root: Path = ROOT) -> list[str]:
     errors = []
     # Include new files so a direct invocation is useful before staging too.
@@ -234,7 +244,11 @@ def check(root: Path = ROOT) -> list[str]:
             name = raw_name.decode("utf-8", errors="backslashreplace")
             errors.append(f"{name}: expected a UTF-8 path")
             continue
-        path = root / name
+        relative_path = Path(name)
+        if contains_symlink(root, relative_path):
+            errors.append(f"{name}: symbolic links are not allowed")
+            continue
+        path = root / relative_path
         suffix = path.suffix.lower()
         if not path.is_file():
             continue
@@ -261,7 +275,8 @@ def check(root: Path = ROOT) -> list[str]:
         if has_conflict_markers(text, suffix == ".md"):
             errors.append(f"{name}: possible merge conflict marker")
         if suffix == ".md":
-            errors.extend(f"{name}: {error}" for error in check_links(root, path, text))
+            link_errors = check_link_targets(root, path, markdown_links(text))
+            errors.extend(f"{name}: {error}" for error in link_errors)
         if path.suffix == ".json":
             try:
                 json.loads(text, parse_constant=reject_json_constant)
@@ -273,8 +288,12 @@ def check(root: Path = ROOT) -> list[str]:
             except yaml.YAMLError as exc:
                 errors.append(f"{name}: invalid YAML: {exc}")
                 continue
-            if path.parent.name == "ISSUE_TEMPLATE" and path.stem + suffix != "config.yml":
-                errors.extend(check_form(name, data))
+            if path.parent.name == "ISSUE_TEMPLATE":
+                if path.stem + suffix == "config.yml":
+                    problems = check_contact_links(root, path, data)
+                    errors.extend(f"{name}: {error}" for error in problems)
+                else:
+                    errors.extend(check_form(root, name, data))
     return errors
 
 
@@ -282,7 +301,24 @@ def reject_json_constant(value: str) -> None:
     raise ValueError(f"non-standard constant {value}")
 
 
-def check_form(name: str, data: object) -> list[str]:
+def check_contact_links(root: Path, path: Path, data: object) -> list[str]:
+    if not isinstance(data, dict):
+        return ["issue chooser configuration must be a mapping"]
+    contacts = data.get("contact_links", [])
+    if not isinstance(contacts, list):
+        return ["contact_links must be a list"]
+    errors = []
+    for index, contact in enumerate(contacts):
+        url = contact.get("url") if isinstance(contact, dict) else None
+        field = f"contact_links[{index}].url"
+        if not isinstance(url, str) or not url.strip():
+            errors.append(f"{field}: expected a non-empty URL")
+            continue
+        errors.extend(f"{field}: {error}" for error in check_link_targets(root, path, [url]))
+    return errors
+
+
+def check_form(root: Path, name: str, data: object) -> list[str]:
     errors = []
     if not isinstance(data, dict):
         return [f"{name}: form must be a mapping"]
@@ -298,13 +334,20 @@ def check_form(name: str, data: object) -> list[str]:
             errors.append(f"{name}: body item must be a mapping")
             continue
         kind = item.get("type")
-        if kind not in {"markdown", "input", "textarea", "dropdown", "checkboxes"}:
+        if kind not in {"markdown", "input", "textarea", "dropdown", "checkboxes", "upload"}:
             errors.append(f"{name}: unsupported field type {kind}")
         attrs = item.get("attributes", {})
         if not isinstance(attrs, dict):
             errors.append(f"{name}: field attributes must be a mapping")
             continue
-        if not attrs.get("value" if kind == "markdown" else "label"):
+        if kind == "markdown":
+            value = attrs.get("value")
+            if not isinstance(value, str) or not value.strip():
+                errors.append(f"{name}: markdown field needs a non-empty text value")
+            else:
+                problems = check_link_targets(root, root / name, markdown_links(value))
+                errors.extend(f"{name}: {error}" for error in problems)
+        elif not attrs.get("label"):
             errors.append(f"{name}: field missing content or label")
         if kind in {"dropdown", "checkboxes"}:
             options = attrs.get("options")
