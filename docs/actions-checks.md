@@ -6,8 +6,21 @@ the [configured Python version](../.python-version) on Ubuntu 24.04 x86-64.
 It also verifies
 [lockfile reproducibility](dependencies.md#reproducing-and-updating-the-lock)
 and runs actionlint 1.7.12 and zizmor 1.32.0.
-Every pull request, push to `main`, and manual dispatch runs the same workflow,
-without path filters or separate orchestration. Analyzer failures fail the job.
+The workflow runs on pull requests, pushes to `main`, manual dispatch, and every
+Monday at 06:23 UTC. Analyzer failures fail the job.
+
+## Weekly run and notifications
+
+GitHub runs the schedule from the default branch. It routes scheduled workflow
+notifications to the account that last changed the cron expression. A maintainer
+who re-enables a disabled workflow becomes the recipient instead. Delivery depends
+on that account's GitHub Actions notification settings. See GitHub's
+[workflow notification rules](https://docs.github.com/en/actions/concepts/workflows-and-actions/notifications-for-workflow-runs).
+
+The expected recipient is `@marekcingel` once that account adds the schedule.
+After the first scheduled run, verify its actor in Actions and confirm that the
+account has workflow failure notifications enabled. Record the run and the
+confirmed recipient in #47.
 
 ## Local reproduction
 
@@ -35,29 +48,36 @@ The supplied hashes cover Linux x86-64.
 
 ## Security review and limits
 
-The workflow audit for issue #12 found one workflow, `quality.yml`, with:
+The `quality.yml` workflow uses these controls:
 
 - Explicit `contents: read` permissions and no write permissions or OIDC grants.
 - Official checkout and setup-python actions pinned to full commit SHAs;
   checkout uses `persist-credentials: false`.
-- `pull_request`, main-branch `push`, and manual triggers; no
-  `pull_request_target` or privileged `workflow_run` execution of PR code.
-- No secrets, personal access tokens, environments, or tokens passed to scripts.
+- `pull_request`, main-branch `push`, scheduled, and manual triggers.
+- A short-lived `GITHUB_TOKEN` mapped to `GH_TOKEN` only in the online zizmor step.
 - No untrusted PR titles, bodies, branch names, or other event values expanded
   into shell commands.
 - GitHub-hosted ephemeral runners, no shared workflow cache or artifact handoff,
   and a ten-minute job timeout.
 
 Concurrency is grouped by workflow, event, and ref. New PR runs cancel older runs for the same
-PR; pushes and manual runs are not canceled by that policy.
+PR. Other events keep their runs under that policy.
 
 PRs execute contributor-controlled checks in an unprivileged job. Keep that
 boundary when adding steps: never expose secrets or privileged tokens to PR code.
-Analyzer installation uses public downloads, and zizmor runs explicitly offline
-without a token. Offline analysis omits GitHub API-dependent checks such as
-online reference resolution; it does not establish an action's provenance or
-replace review of action updates and executable scripts. No SARIF upload or
-`security-events: write` permission is needed.
+Pull requests and manual dispatch run zizmor offline. Pushes to `main` and
+scheduled runs on `main` run zizmor online. The online step uses the built-in
+token with the workflow's `contents: read` permission for checkout and GitHub
+API lookups. The workflow uses public action references and grants no additional
+permissions. See [zizmor's token requirements](https://docs.zizmor.sh/usage/#github-api-application-programming-interface-token-permissions).
+
+Online mode enables `impostor-commit` for SHA provenance and
+`ref-version-mismatch` for version comments that disagree with their pins.
+The `stale-action-refs` rule checks whether a pin points to a tag and reports
+untagged pins under zizmor's pedantic persona.
+Review the first push and scheduled run to confirm the online step succeeds
+with `contents: read`. On the PR, verify the offline step runs and the online
+step is skipped. See the [zizmor audit rules](https://docs.zizmor.sh/audits/).
 
 ## Suppressions and updates
 

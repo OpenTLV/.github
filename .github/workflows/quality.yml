@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    - cron: '23 6 * * 1'
   workflow_dispatch:
 
 permissions:
@@ -51,5 +53,14 @@ jobs:
       - name: Install GitHub Actions security analyzer
         run: |
           python -m pip install --require-hashes --only-binary=:all: -r requirements-actions.txt
-      - name: Check GitHub Actions security
+      - name: Check GitHub Actions security offline
+        if: github.ref != 'refs/heads/main' || (github.event_name != 'push' && github.event_name != 'schedule')
         run: zizmor --offline --strict-collection --collect=workflows .
+      - name: Check GitHub Actions security online
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          : "${GH_TOKEN:?GitHub token is required for online audits}"
+          zizmor --strict-collection --collect=workflows .
