@@ -53,10 +53,11 @@ protection if required. Avoid overlapping configurations with conflicting rules.
 For OpenTLV/.github require `quality` and `workflow-analyzers`, both produced
 by GitHub Actions, app ID `15368`. Another repository must select its own checks.
 
-On 2026-11-18, the active [OpenTLV/.github ruleset](https://github.com/OpenTLV/.github/rules/27459354)
-required `quality` from GitHub Actions with strict status checks. The workflow
-also reported `workflow-analyzers`. Check the effective required-check list
-when auditing enforcement.
+On 2026-11-18, the GitHub API showed that the effective
+[OpenTLV/.github ruleset](https://github.com/OpenTLV/.github/rules/27459354)
+for `main` required only `quality` from GitHub Actions (app ID `15368`),
+with strict status checks enabled. `workflow-analyzers` reports a result
+and is currently optional under the ruleset.
 
 Keep **Allow merge commits** enabled. Propose disabling squash and rebase merge
 methods for this history-preserving policy. Do not apply that change without
