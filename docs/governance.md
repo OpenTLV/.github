@@ -50,14 +50,14 @@ protection if required. Avoid overlapping configurations with conflicting rules.
 | Routine bypass actors | None; any exceptional bypass requires separate documented approval |
 | Allowed PR merge method | Regular merge commit; preserve all branch commits and their parent relationships |
 
-For OpenTLV/.github require `quality`, produced by GitHub Actions, app ID
-`15368`. Another repository must select its own checks.
+For OpenTLV/.github require `quality` and `workflow-analyzers`, both produced
+by GitHub Actions, app ID `15368`. Another repository must select its own checks.
 
-For the migration PR, first verify that `quality` succeeds on its current head.
-Before merging, replace `quality (3.10)` and `quality (3.12)` with `quality`
-in the same ruleset update and keep GitHub Actions as the expected source.
-Keep strict status checks and the other main-branch protections enabled.
-Confirm the PR is mergeable after the update and verify the first run on `main`.
+For the PR introducing `workflow-analyzers`, verify that both checks succeed
+on its current head. Before merging, add `workflow-analyzers` to the existing
+`quality` requirement and select GitHub Actions as the source. Keep strict
+status checks and the other main-branch protections enabled. Confirm the PR is
+mergeable after the update and verify that both jobs pass on `main`.
 
 Keep **Allow merge commits** enabled. Propose disabling squash and rebase merge
 methods for this history-preserving policy. Do not apply that change without

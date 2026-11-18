@@ -53,7 +53,7 @@ excluded from repository scans.
 
 Changes to workflows must also pass actionlint and zizmor; see
 [GitHub Actions checks](actions-checks.md) for local commands. CI runs the same
-pre-commit checks and workflow analyzers in its `quality` job.
+pre-commit checks in `quality` and the analyzers in `workflow-analyzers`.
 
 The community checker validates UTF-8, LF endings, trailing whitespace, final
 newlines, conflict markers, local Markdown link targets, YAML/JSON syntax, and

@@ -1,13 +1,18 @@
 # GitHub Actions checks
 
-The repository-local `Community quality` workflow runs pre-commit (community
-validation, its regression tests, Markdown lint, and REUSE) and `pip check` on
-the [configured Python version](../.python-version) on Ubuntu 24.04 x86-64.
-It also verifies
-[lockfile reproducibility](dependencies.md#reproducing-and-updating-the-lock)
-and runs actionlint 1.7.12 and zizmor 1.32.0.
+The repository-local `Community quality` workflow runs two independent jobs
+in parallel on Ubuntu 24.04 x86-64 with the
+[configured Python version](../.python-version).
+
+- `quality` verifies
+  [lockfile reproducibility](dependencies.md#reproducing-and-updating-the-lock)
+  and runs `pip check` and pre-commit (community validation, regression tests,
+  Markdown lint, and REUSE).
+- `workflow-analyzers` runs actionlint 1.7.12 and zizmor 1.32.0.
+
 The workflow runs on pull requests, pushes to `main`, manual dispatch, and every
-Monday at 06:23 UTC. Analyzer failures fail the job.
+Monday at 06:23 UTC. Both jobs are required for PRs targeting `main` under the
+[main branch ruleset](governance.md#proposed-main-branch-controls).
 
 ## Weekly run and notifications
 
