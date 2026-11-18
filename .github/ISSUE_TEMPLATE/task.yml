@@ -1,5 +1,6 @@
 name: Task
 description: Plan defined implementation work with acceptance criteria and validation.
+type: Task
 body:
   - type: markdown
     attributes:

@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Default Task and Epic issue types for the corresponding shared forms. (#42)
 - Default `bug`, `enhancement`, and `chore` labels for the corresponding shared issue forms. (#42)
 - Pinned, integrity-checked actionlint and zizmor checks in community CI, with local reproduction and workflow security guidance. (#12)
 - Organization-wide changelog guidance with newest-first releases and entries within each category. (#17)
