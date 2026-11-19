@@ -169,10 +169,9 @@ and [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
   Unreleased section is present, its comparison starts at the latest release
   tag, if one exists.
 
-Every OpenTLV `CHANGELOG.md` must start with the introduction shown below.
-The `OpenTLV/.github` changelog keeps all references unlinked and uses plain
-text for the names of both standards. Other repositories include both links as
-shown. The versions, dates, and changes after the introduction are examples.
+Every OpenTLV `CHANGELOG.md` must start with the introduction shown below,
+including both links. In `OpenTLV/.github`, keep references in release sections
+as plain text. The versions, dates, and changes below are examples.
 
 ```markdown
 # Changelog

@@ -99,6 +99,9 @@ in this repository.
    the repository's normal settings change process. Verify both are active
    and check their targets, rules and bypass actors before dispatching the
    first release.
+6. If your organization or repository restricts allowed actions, check that
+   its policy permits `actions/create-github-app-token` at the commit pinned
+   in the release workflow. Update the allowlist when that pin changes.
 
 ## Use the changelog CLI in another repository
 
@@ -177,6 +180,11 @@ initial run to retain the version and dispatch SHA even if `main` has advanced.
 Under the same concurrency
 group, read the remote state again, including after an ambiguous push or API
 response. An access or network error leaves that state unknown and stops the run.
+
+After running `gh release create`, the publisher checks the releases list
+immediately. If GitHub returns the list but omits the new release, the
+publisher repeats the lookup with increasing delays totaling up to 62 seconds.
+Once the release appears, it verifies the stored metadata against the candidate.
 
 | Remote state | Workflow action |
 | --- | --- |
@@ -322,22 +330,23 @@ In `OpenTLV/.github`, the heading
 `## [0.1.0-rc.1] - 2026-11-19` yields tag `v0.1.0-rc.1` and a GitHub
 prerelease titled `OpenTLV community defaults 0.1.0-rc.1`.
 
-To promote it without code changes, keep that published section intact. Add a
-new dated stable section above the prerelease section and link to the
-prerelease. Replace `YYYY-MM-DD` with the stable release date. The shared CLI
-carries the `rc-notes` definition into the stable Release body.
+Keep the published prerelease section intact. Add a stable section above it
+and include any fixes made since the prerelease. For example, the first
+stable release includes a fix for delayed release listings. Replace
+`YYYY-MM-DD` with the stable release date.
 
 ```markdown
 ## [0.1.0] - YYYY-MM-DD
 
+### Fixed
+
+- Retry release verification when GitHub takes time to list a newly published release. (`#69`)
+
 ### Changed
 
-- Promote [0.1.0-rc.1][rc-notes] to stable without code changes.
-
-[rc-notes]: https://github.com/OpenTLV/.github/releases/tag/v0.1.0-rc.1
+- Promote `0.1.0-rc.1` to stable.
 ```
 
 Run Full CI on the new `main` commit containing this stable section. After it
 passes, the workflow signs `v0.1.0` on that commit and publishes
-`OpenTLV community defaults 0.1.0` as a stable Release. Its body includes
-the link to the prerelease.
+`OpenTLV community defaults 0.1.0` as a stable Release with the entries above.

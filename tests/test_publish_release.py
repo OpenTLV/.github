@@ -54,6 +54,8 @@ class PublishTests(unittest.TestCase):
         self.notes.write_bytes(b"### Changed\n\n- Details.\n")
         self.releases = []
         self.creates = 0
+        self.hidden_release_reads = 0
+        self.sleep = self.enterContext(patch.object(publisher, "sleep"))
         self.interrupted = set()
         self.git_run = publisher.run
         self.enterContext(patch.object(publisher, "run", side_effect=self.api))
@@ -67,6 +69,9 @@ class PublishTests(unittest.TestCase):
         if args[:2] == ("gh", "api"):
             if "lookup" in self.interrupted:
                 raise subprocess.CalledProcessError(1, args, stderr="repository unavailable")
+            if self.releases and self.hidden_release_reads:
+                self.hidden_release_reads -= 1
+                return subprocess.CompletedProcess(args, 0, stdout=json.dumps([self.releases[:-1]]))
             return subprocess.CompletedProcess(args, 0, stdout=json.dumps([self.releases]))
         self.assertEqual(args[:3], ("gh", "release", "create"))
         self.assertIn("--verify-tag", args)
@@ -98,6 +103,20 @@ class PublishTests(unittest.TestCase):
                 })
         self.assertEqual(self.creates, 2)
 
+    def test_new_release_appears_after_delayed_reads(self):
+        self.hidden_release_reads = 2
+        self.publish()
+        self.assertEqual(self.creates, 1)
+        self.assertEqual(self.sleep.call_count, 2)
+        self.assertEqual(self.releases[0]["tag_name"], "v1.0.0")
+
+    def test_unconfirmed_successful_create_fails_without_creating_again(self):
+        self.hidden_release_reads = 100
+        with self.assertRaisesRegex(ValueError, "Could not confirm"):
+            self.publish()
+        self.assertEqual(self.creates, 1)
+        self.assertGreater(self.hidden_release_reads, 0)
+
     def test_reconcile_dropped_responses_and_resume_tag_only(self):
         self.interrupted.update(["push", "before create"])
         with self.assertRaises(subprocess.CalledProcessError):
@@ -105,6 +124,7 @@ class PublishTests(unittest.TestCase):
         oid = publisher.remote_tag("v1.0.0")
         self.assertIsNotNone(oid)
         self.interrupted = {"after create"}
+        self.hidden_release_reads = 1
         self.publish()
         self.assertEqual(oid, publisher.remote_tag("v1.0.0"))
         self.assertEqual(len(self.releases), 1)

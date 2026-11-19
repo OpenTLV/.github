@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+from time import sleep
 
 from scripts.release_notes import SEMVER
 
@@ -102,11 +103,17 @@ def publish(repo, version, sha, display_name, fingerprint, notes):
         if prerelease:
             args.append("--prerelease")
         create = run(*args, check=False)
-        # Reconcile an ambiguous API response by checking durable remote state.
-        release = remote_release(repo, tag)
-        if release is None:
+        # The releases list can lag behind a successful create, even if the
+        # create response was lost. Repeat only the lookup.
+        for delay in (0, 2, 4, 8, 16, 32):
+            if delay:
+                sleep(delay)
+            release = remote_release(repo, tag)
+            if release is not None:
+                break
+        else:
             create.check_returncode()
-            raise ValueError(f"Could not confirm the GitHub Release for {tag}")
+            raise ValueError(f"Could not confirm the GitHub Release for {tag} after repeated lookups")
     differences = [field for field, value in expected.items() if release[field] != value]
     if differences:
         raise ValueError(f"Existing Release for {tag} differs in {', '.join(differences)}")
