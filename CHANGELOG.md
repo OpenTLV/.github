@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Document [how to verify the first prerelease and stable release][release-verification] in OpenTLV/.github. (#69)
+- Document [how to verify the first prerelease and stable release](docs/releases.md#verify-the-first-releases-in-opentlvgithub) in OpenTLV/.github. (#69)
 - Publish stable releases and prereleases from a CI-tested commit with signed tags, and extract their notes with a shared changelog CLI. (#69)
 - Document how OpenTLV repositories publish stable releases and prereleases from a CI-tested commit using signed, immutable tags. (#68)
 - Run community quality checks weekly and enable online zizmor audits on pushes to `main` and scheduled runs. (#47)
@@ -75,6 +75,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplify contribution and validation guidance, consolidate tooling update rules, and clarify tracked and untracked file coverage. (#26)
 - Separate inherited contribution rules from community-repository development instructions and remove obsolete bootstrap guidance. (#20)
 - Changelog uses standard change categories; verification evidence and outstanding checks remain in the adoption guide. (#3)
-
-[0.1.0-rc.1]: https://github.com/OpenTLV/.github/releases/tag/v0.1.0-rc.1
-[release-verification]: docs/releases.md#verify-the-first-releases-in-opentlvgithub
