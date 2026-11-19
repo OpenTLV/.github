@@ -5,13 +5,10 @@ Each repository owns its Full CI and release workflow. Only its release
 workflow creates release tags. The tag, GitHub Release, and changelog entry
 all identify the same version and the same commit from `main`.
 
-The first production release will be in `OpenTLV/.github`. After the
-[disposable repository checks](#test-in-a-disposable-repository) pass, open
-**Actions → Release → Run workflow** in `OpenTLV/.github`, choose `main` and
-enter the version from its changelog without the `v` prefix. For example,
-`gh workflow run release.yml --repo OpenTLV/.github --ref main -f version=0.1.0-rc.1`.
-The [release workflow](../.github/workflows/release.yml) uses the display name
-`OpenTLV community defaults`.
+The first release in `OpenTLV/.github` will be `0.1.0-rc.1`. The
+[release workflow](../.github/workflows/release.yml) uses the display name
+`OpenTLV community defaults`. [Verify the prerelease and its stable promotion](#verify-the-first-releases-in-opentlvgithub)
+in this repository.
 
 ## What each repository configures
 
@@ -99,9 +96,9 @@ The [release workflow](../.github/workflows/release.yml) uses the display name
    ```
 
 5. Configure the [two tag rulesets](#enforce-and-verify-immutable-tags) under
-   the repository's normal settings change process. Complete the
-   [disposable repository checks](#test-in-a-disposable-repository) before the
-   first production release.
+   the repository's normal settings change process. Verify both are active
+   and check their targets, rules and bypass actors before dispatching the
+   first release.
 
 ## Use the changelog CLI in another repository
 
@@ -220,7 +217,7 @@ rules within one ruleset, so keep creation and immutability in separate rulesets
 The [immutable tags ruleset](../.github/rulesets/immutable-tags.json) is ready
 to apply. Render the [release tag creation template](../.github/rulesets/create-release-tags.template.json)
 with the installed App's numeric **App ID** from its registration. Set `REPO`
-to the disposable `OWNER/REPOSITORY` for the rehearsal. From the checkout root,
+to the repository whose settings you are reviewing. From the checkout root,
 prepare the payload and inspect existing rulesets, including inherited ones.
 
 ```sh
@@ -254,6 +251,10 @@ done
 ```
 
 ## Test in a disposable repository
+
+Repositories can rehearse their setup on a disposable remote. Run the exercises that
+intentionally create conflicting tags, force-update tags or delete tags on
+an authorized disposable remote.
 
 1. Create a new empty repository under an account or organization where you can
    administer Actions, environments, Apps and tag rulesets. On GitHub Free use
@@ -291,22 +292,42 @@ For the Release checks, inspect the published fields with
 Fetch and verify each tag with the independently retained test public key.
 `git cat-file -p refs/tags/TAG` shows the signed name, the direct target type,
 and its SHA. Capture remote object IDs with `git ls-remote --refs origin
-refs/tags/TAG`. Re-read the active production settings and record their review
-alongside the disposable run evidence before the first production dispatch.
+refs/tags/TAG` and record them alongside the rehearsal results.
+
+## Verify the first releases in OpenTLV/.github
+
+1. Merge the dated `0.1.0-rc.1` changelog section into `main`. In
+   **Actions → Release → Run workflow**, choose `main` and enter `0.1.0-rc.1`,
+   or run `gh workflow run release.yml --repo OpenTLV/.github --ref main -f version=0.1.0-rc.1`.
+2. Record the workflow run and Release links, dispatch SHA and active tag
+   ruleset IDs in [issue #69](https://github.com/OpenTLV/.github/issues/69).
+   Check that `quality` and `workflow-analyzers` passed for that SHA.
+3. Fetch the release tag and run `git verify-tag --raw v0.1.0-rc.1` with the
+   independently retained public key. Check the signing fingerprint in
+   `VALIDSIG` against `DBD1FDDBAB9D0C849B9375C7C4FF45FD827A996C`. Inspect
+   `git cat-file -p refs/tags/v0.1.0-rc.1` for the embedded tag name,
+   direct target type `commit` and exact dispatch SHA.
+4. Check the published title, Markdown body and links against the changelog
+   section at the dispatch SHA. Verify the Release is a prerelease and
+   record the results in #69.
+5. After verifying the RC, prepare the dated `0.1.0` section in a separate
+   PR using the promotion example below. Merge it, dispatch `0.1.0` on
+   `main`, and repeat the checks for the new tag and commit. The published
+   stable Release must have its prerelease flag cleared.
 
 ## Example promotion from prerelease to stable
 
-In `OpenTLV/.github`, the example heading
-`## [0.1.0-rc.1] - 2026-11-10` yields tag `v0.1.0-rc.1` and a GitHub
+In `OpenTLV/.github`, the heading
+`## [0.1.0-rc.1] - 2026-11-19` yields tag `v0.1.0-rc.1` and a GitHub
 prerelease titled `OpenTLV community defaults 0.1.0-rc.1`.
 
 To promote it without code changes, keep that published section intact. Add a
 new dated stable section immediately below Unreleased that links to the
-prerelease. In this example the shared CLI carries the `rc-notes` definition
-into the stable Release body.
+prerelease. Replace `YYYY-MM-DD` with the stable release date. The shared CLI
+carries the `rc-notes` definition into the stable Release body.
 
 ```markdown
-## [0.1.0] - 2026-11-12
+## [0.1.0] - YYYY-MM-DD
 
 ### Changed
 
