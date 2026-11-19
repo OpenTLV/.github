@@ -10,6 +10,7 @@ Organization profile, community policies, and shared GitHub templates for OpenTL
 - [Support](SUPPORT.md)
 - [Adoption, overrides, and deployment verification](docs/adoption.md)
 - [Repository governance baseline](docs/governance.md)
+- [Release tags and GitHub Releases](docs/releases.md)
 - [Licensing and attribution](docs/licensing.md)
 - [Changelog](CHANGELOG.md)
 

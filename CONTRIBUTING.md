@@ -208,6 +208,9 @@ For example, in a repository with tags `v0.8.0` and `v0.9.0`, define
 `[0.9.0]` as `https://github.com/OWNER/REPO/compare/v0.8.0...v0.9.0`, replacing
 `OWNER/REPO` and tag names with the destination repository's actual values.
 
+For release candidates, stable promotion, and publication, follow the
+[OpenTLV release policy](https://github.com/OpenTLV/.github/blob/main/docs/releases.md).
+
 ## Repository development guidance
 
 Follow the destination repository's development instructions for setup, tooling,
