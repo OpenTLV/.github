@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: '23 6 * * 1'
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      release-candidate:
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -23,6 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
           fetch-depth: 2
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -67,6 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -85,13 +92,27 @@ jobs:
         run: |
           python -m pip install --require-hashes --only-binary=:all: -r requirements-actions.txt
       - name: Check GitHub Actions security offline
-        if: github.ref != 'refs/heads/main' || (github.event_name != 'push' && github.event_name != 'schedule')
+        if: github.ref != 'refs/heads/main' || (github.event_name != 'push' && github.event_name != 'schedule' && !inputs.release-candidate)
         run: zizmor --offline --strict-collection --collect=workflows .
       - name: Check GitHub Actions security online
-        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule')
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule' || inputs.release-candidate)
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           : "${GH_TOKEN:?GitHub token is required for online audits}"
           zizmor --strict-collection --collect=workflows .
+
+  verify-full-ci:
+    if: ${{ !cancelled() && inputs.release-candidate }}
+    needs: [quality, workflow-analyzers]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
+    steps:
+      - name: Require both designated jobs to have passed
+        env:
+          QUALITY: ${{ needs.quality.result }}
+          ANALYZERS: ${{ needs.workflow-analyzers.result }}
+        run: |
+          test "$QUALITY" = success
+          test "$ANALYZERS" = success

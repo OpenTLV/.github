@@ -61,9 +61,9 @@ for `main` required both `quality` and `workflow-analyzers` from GitHub Actions
 Keep **Allow merge commits** enabled. Propose disabling squash and rebase merge
 methods for this history-preserving policy. Do not apply that change without
 approval. Keep PR, Main, and Full
-orchestrators repository-local if a project uses them. This repository currently
-needs only its Community quality workflow; do not add orchestrators or reusable
-workflows without demonstrated duplication.
+orchestrators repository-local if a project uses them. This repository's
+Release workflow calls Community quality to run the same checks on the
+release candidate. See the [release policy](releases.md).
 
 Rule semantics: [available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 Signed history must be checked through GitHub verification records, not just an
