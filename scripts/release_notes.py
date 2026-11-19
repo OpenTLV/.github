@@ -134,20 +134,23 @@ def section(mask, version):
     if not SEMVER.fullmatch(version):
         raise ValueError(f"invalid SemVer version: {version!r}")
     headings = HEADING.finditer(mask)
-    first = next(headings, None)
-    if not first or first[1] != "[Unreleased]":
-        raise ValueError("expected ## [Unreleased] before the first release")
     latest = next(headings, None)
+    if latest and latest[1] == "[Unreleased]":
+        latest = next(headings, None)
     if not latest:
-        raise ValueError(f"expected {version!r} as the first release below Unreleased")
+        raise ValueError(f"expected a dated release heading for {version}")
     dated = re.fullmatch(r"\[([^\]]+)\] - ([0-9]{4}-[0-9]{2}-[0-9]{2})", latest[1])
     if not dated:
         raise ValueError(f"expected a dated release heading for {version}")
     if dated[1] != version:
         raise ValueError(f"first changelog release is {dated[1]!r}, expected {version!r}")
     date.fromisoformat(dated[2])
-    following = next((h for h in headings if re.match(rf"\[(?:{SEMVER.pattern})\](?: |$)", h[1])), None)
-    return latest.end(), following.start() if following else len(mask)
+    for heading in headings:
+        if heading[1] == "[Unreleased]":
+            raise ValueError("Unreleased must precede dated releases")
+        if re.match(rf"\[(?:{SEMVER.pattern})\](?: |$)", heading[1]):
+            return latest.end(), heading.start()
+    return latest.end(), len(mask)
 
 
 class SourceLinks:

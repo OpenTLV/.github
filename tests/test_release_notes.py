@@ -50,7 +50,8 @@ class ReleaseNotesTests(unittest.TestCase):
 
     def test_missing_or_mismatched_first_section_and_invalid_dates(self):
         older = "\n## [1.2.3] - 2024-02-29\n\n- Older.\n"
-        for header in ("", "## [Unreleased]\n", "## [1.2.3] - 2024-01-12\n",
+        for header in ("", "## [Unreleased]\n", "## [2.0.0] - 2024-03-01\n" + older,
+                       "## [1.2.3] - 2024-02-29\n\n- Released.\n\n## [Unreleased]\n",
                        "## [Unreleased]\n## [1.2.3-rc.1] - 2024-01-01\n" + older,
                        "## [Unreleased]\n## 2.0.0 - 2024-05-01\n" + older,
                        "## [Unreleased]\n## [1.2.3+build] - 2024-01-01\n",
@@ -60,6 +61,14 @@ class ReleaseNotesTests(unittest.TestCase):
                 self.changelog.write_text(header + "\n- Notes.\n", encoding="utf-8")
                 with self.assertRaises(ValueError):
                     release_notes(self.changelog, "1.2.3")
+
+    def test_dated_release_first(self):
+        body = "### Added\n\n- First release candidate.\n"
+        self.changelog.write_text(
+            "# Changelog\n\n## [1.2.3-rc.1] - 2024-02-29\n\n" + body
+            + "\n## [1.2.2] - 2024-01-12\n\n- Earlier release.\n", encoding="utf-8",
+        )
+        self.assertEqual(release_notes(self.changelog, "1.2.3-rc.1"), body)
 
     def test_preserve_markdown_and_collect_only_referenced_definitions(self):
         header = "## [1.2.3-rc.1+build.007] - 2024-02-29\n\n"
