@@ -1,0 +1,90 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Full SemVer version from CHANGELOG.md (without v)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require a dispatch from main
+        run: test "$GITHUB_REF" = refs/heads/main
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate candidate and release notes
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 scripts/release_notes.py --changelog CHANGELOG.md --version "$VERSION" --output "$RUNNER_TEMP/release-notes.md"
+
+  full-ci:
+    needs: prepare
+    # Both local syntaxes pin to the caller commit. actionlint 1.7.12 accepts ./.
+    uses: ./.github/workflows/quality.yml # zizmor: ignore[self-repository]
+    with:
+      release-candidate: true
+
+  publish:
+    needs: full-ci
+    if: github.ref == 'refs/heads/main' && needs.full-ci.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: release
+    concurrency:
+      group: release-publication
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Extract notes from the tested commit
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 scripts/release_notes.py --changelog CHANGELOG.md --version "$VERSION" --output "$RUNNER_TEMP/release-notes.md"
+      - name: Create the release App installation token
+        id: publisher
+        uses: actions/create-github-app-token@f418cff399f7aef4c2f0ad47e25ca7a6abbdd6fc # v3.4.0
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          # GitHub checks workflow-file differences when tagging an older main commit.
+          permission-workflows: write
+      - name: Sign the tag and publish the release
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+          DISPLAY_NAME: OpenTLV community defaults
+          GH_TOKEN: ${{ steps.publisher.outputs.token }}
+          APP_SLUG: ${{ steps.publisher.outputs.app-slug }}
+          RELEASE_SIGNING_FINGERPRINT: ${{ vars.RELEASE_SIGNING_FINGERPRINT }}
+          RELEASE_SIGNING_KEY: ${{ secrets.RELEASE_SIGNING_KEY }}
+        run: |
+          set -euo pipefail
+          GNUPGHOME=$(mktemp -d "$RUNNER_TEMP/release-gpg.XXXXXX")
+          export GNUPGHOME
+          trap 'gpgconf --kill gpg-agent; rm -rf -- "$GNUPGHOME"' EXIT
+          printf '%s\n' "$RELEASE_SIGNING_KEY" | gpg --batch --import
+          unset RELEASE_SIGNING_KEY
+          bot_id=$(gh api "users/${APP_SLUG}%5Bbot%5D" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${bot_id}+${APP_SLUG}[bot]@users.noreply.github.com"
+          gh auth setup-git
+          python3 -m scripts.publish_release --version "$VERSION" --sha "$GITHUB_SHA" \
+            --display-name "$DISPLAY_NAME" --fingerprint "$RELEASE_SIGNING_FINGERPRINT" \
+            --notes "$RUNNER_TEMP/release-notes.md"

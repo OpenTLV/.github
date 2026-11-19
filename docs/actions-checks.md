@@ -12,6 +12,8 @@ in parallel on Ubuntu 24.04 x86-64 with the
 
 The workflow runs on pull requests, pushes to `main`, manual dispatch, and every
 Monday at 06:23 UTC. Both jobs report on pull requests targeting `main`.
+The [release workflow](../.github/workflows/release.yml) also calls this workflow
+at the dispatch commit and requires both job conclusions to be `success`.
 The [governance baseline](governance.md#main-branch-controls) lists
 the required-check policy and the last verified ruleset state.
 The job split is recorded in [issue #46](https://github.com/OpenTLV/.github/issues/46).
@@ -71,8 +73,9 @@ parallel.
 
 PRs execute contributor-controlled checks in an unprivileged job. Keep that
 boundary when adding steps: never expose secrets or privileged tokens to PR code.
-Pull requests and manual dispatch run zizmor offline. Pushes to `main` and
-scheduled runs on `main` run zizmor online. The online step uses the built-in
+Pull requests and standalone manual quality runs use zizmor offline. Pushes to
+`main`, scheduled runs on `main`, and release candidates on `main` run zizmor
+online. The online step uses the built-in
 token with the workflow's `contents: read` permission for checkout and GitHub
 API lookups. The workflow uses public action references and grants no additional
 permissions. See [zizmor's token requirements](https://docs.zizmor.sh/usage/#github-api-application-programming-interface-token-permissions).
@@ -85,8 +88,13 @@ See the [zizmor audit rules](https://docs.zizmor.sh/audits/).
 
 ## Suppressions and updates
 
-There are currently no actionlint or zizmor finding suppressions. Fix findings
-first. If an exception is necessary, use the narrowest rule and location, record
+The release workflow uses `./.github/workflows/quality.yml` so actionlint 1.7.12
+can validate its inputs. Its single `self-repository` exception covers that
+call. Both `./` and `$/` load the workflow at the caller's exact commit.
+Revisit the exception when updating actionlint.
+[GitHub reusable workflow reference](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows#calling-a-reusable-workflow).
+
+Fix findings first. If an exception is necessary, use the narrowest rule and location, record
 the security rationale beside it, and describe the remaining risk in the PR.
 Do not add blanket ignores or disable checks to make CI green.
 

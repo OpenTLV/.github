@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Publish stable releases and prereleases from a CI-tested commit with signed tags, and extract their notes with a shared changelog CLI. (#69)
 - Document how OpenTLV repositories publish stable releases and prereleases from a CI-tested commit using signed, immutable tags. (#68)
 - Run community quality checks weekly and enable online zizmor audits on pushes to `main` and scheduled runs. (#47)
 - CI verifies development lockfile reproducibility and checks installed Python dependencies. (#44)
