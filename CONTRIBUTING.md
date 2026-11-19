@@ -143,10 +143,11 @@ For future changelog updates across OpenTLV repositories, use a root
 `CHANGELOG.md` following [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/)
 and [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
-- Keep `## [Unreleased]` as the first version section. Add notable changes there
-  as work lands, grouped under `Added`, `Changed`, `Deprecated`, `Removed`,
+- When there are pending changes, use `## [Unreleased]` as the first version
+  section. Add notable changes there as work lands, grouped under
+  `Added`, `Changed`, `Deprecated`, `Removed`,
   `Fixed`, or `Security` where applicable; omit empty categories.
-- Keep released versions below Unreleased in reverse chronological order
+- Keep released versions in reverse chronological order
   (newest release first).
 - **Prepend a newly introduced category at the top of its version section**,
   before any existing categories. Categories have no fixed order.
@@ -159,12 +160,14 @@ and [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
   do not generate a changelog by dumping Git commit logs.
 - At release time, move the relevant Unreleased entries into a section named
   `## [<version>] - YYYY-MM-DD`, using the actual version and ISO 8601 release
-  date. Keep Unreleased above it for subsequent work; do not invent releases
-  for policy updates.
+  date. If all entries have moved, the empty Unreleased section and its link
+  definition may be omitted until the next pending change. Do not invent
+  releases for policy updates.
 - Use the `v` prefix in Git release tags, for example `v1.0.0`, but omit it
   from changelog version headings: `## [1.0.0] - YYYY-MM-DD`.
-- Link version headings to tags or comparisons where applicable. After a
-  release, update the Unreleased comparison to start at the latest release tag.
+- Link version headings to tags or comparisons where applicable. When the
+  Unreleased section is present, its comparison starts at the latest release
+  tag, if one exists.
 
 Every OpenTLV `CHANGELOG.md` must start with the exact introduction shown below,
 including both reference links. The versions, dates, and changes after the

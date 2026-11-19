@@ -139,8 +139,9 @@ steps:
 2. **Prepare the release notes.** Invoke the shared CLI directly with Python.
    Pass `--changelog` pointing to the candidate's root `CHANGELOG.md`,
    `--version` with the full input (without a leading `v`), and
-   `--output release-notes.md`. Require the first release heading below
-   `## [Unreleased]` to be `## [<version>] - YYYY-MM-DD` with a valid date
+   `--output release-notes.md`. The changelog may start its version sections
+   with `## [Unreleased]` for pending changes. Require the first dated
+   section to be `## [<version>] - YYYY-MM-DD` with a valid date
    and an exact version match, including any prerelease and build identifiers.
    Stop on a missing or mismatched section. Extract only that section's body,
    ending before the next version heading or at EOF. Preserve Markdown headings, lists, links,
@@ -322,7 +323,7 @@ In `OpenTLV/.github`, the heading
 prerelease titled `OpenTLV community defaults 0.1.0-rc.1`.
 
 To promote it without code changes, keep that published section intact. Add a
-new dated stable section immediately below Unreleased that links to the
+new dated stable section above the prerelease section and link to the
 prerelease. Replace `YYYY-MM-DD` with the stable release date. The shared CLI
 carries the `rc-notes` definition into the stable Release body.
 
